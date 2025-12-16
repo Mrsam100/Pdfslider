@@ -1,0 +1,7 @@
+{
+  "name": "PDFToSlides Pro",
+  "description": "Enterprise-grade PDF & DOCX to strategic presentation engine powered by Gemini 2.5 Pro.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
