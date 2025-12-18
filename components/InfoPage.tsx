@@ -1,7 +1,7 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
+ */
 
 import React from 'react';
 
@@ -22,14 +22,14 @@ const InfoPage: React.FC<InfoPageProps> = ({ pageId }) => {
   const data = contentMap[pageId] || { title: "Page Not Found", content: "The requested page does not exist." };
 
   return (
-    <div className="min-h-screen py-32 px-6 max-w-[800px] mx-auto animate-fade-in-up text-center">
-       <div className="clay-card p-12 bg-white/80 backdrop-blur-sm">
-           <h1 className="text-4xl font-extrabold text-[#4A4A4A] mb-8">{data.title}</h1>
-           <div className="w-16 h-1 bg-[#FFB673] mx-auto mb-8 rounded-full"></div>
-           <p className="text-lg text-gray-600 leading-relaxed">
+    <div className="min-vh-100 px-4 mx-auto text-center" style={{paddingTop: '8rem', paddingBottom: '8rem', maxWidth: '800px', animation: 'fadeInUp 0.6s ease-out'}}>
+       <div className="clay-card p-5" style={{background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(4px)'}}>
+           <h1 className="fs-1 fw-bolder mb-4" style={{color: '#4A4A4A'}}>{data.title}</h1>
+           <div className="mx-auto mb-4 rounded-pill" style={{width: '4rem', height: '0.25rem', backgroundColor: '#FFB673'}}></div>
+           <p className="fs-5 text-muted" style={{lineHeight: 1.625}}>
                {data.content}
            </p>
-           <div className="mt-12 p-6 bg-[#F8E9DD] rounded-xl text-sm text-gray-500">
+           <div className="mt-5 p-3 rounded-3 fs-6 text-muted" style={{backgroundColor: '#F8E9DD'}}>
                This is a demo page for the ClayCoin application interface.
            </div>
        </div>

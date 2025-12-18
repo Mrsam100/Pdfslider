@@ -5,12 +5,60 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Safely get API key - don't crash if not available
+// Note: In Vite, environment variables must be prefixed with VITE_ to be exposed to the client
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+let ai: GoogleGenAI | null = null;
 
-export const analyzePdfForSlides = async (rawText: string): Promise<any> => {
+// Initialize AI client only if API key is available
+if (API_KEY && API_KEY !== 'your_api_key_here') {
   try {
-    // INCREASED CONTEXT LIMIT: 800,000 characters (~200k tokens) to ensure ALL data from large PDFs is captured.
-    const context = rawText.substring(0, 800000);
+    ai = new GoogleGenAI({ apiKey: API_KEY });
+    console.log('Gemini AI initialized successfully');
+  } catch (error) {
+    console.error('Failed to initialize Gemini AI:', error);
+  }
+} else {
+  console.warn('Gemini API key not configured. AI features will be limited.');
+}
+
+interface SlideData {
+  title: string;
+  bullets: string[];
+  category: string;
+  diagramType: string;
+  imagePrompt?: string;
+}
+
+interface GeminiResponse {
+  executiveDeck: SlideData[];
+  creativeDeck: SlideData[];
+  technicalDeck: SlideData[];
+}
+
+export const analyzePdfForSlides = async (
+  rawText: string,
+  timeoutMs: number = 120000, // 2 minutes default timeout
+  maxRetries: number = 2
+): Promise<GeminiResponse | null> => {
+  // Check if AI client is initialized
+  if (!ai) {
+    console.error('Gemini AI not initialized. Please configure API_KEY in your .env file.');
+    return null;
+  }
+
+  let lastError: Error | null = null;
+
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      if (attempt > 0) {
+        console.log(`Retry attempt ${attempt} of ${maxRetries}...`);
+        // Wait before retrying (exponential backoff)
+        await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+      }
+
+      // INCREASED CONTEXT LIMIT: 800,000 characters (~200k tokens) to ensure ALL data from large PDFs is captured.
+      const context = rawText.substring(0, 800000);
 
     const prompt = `You are an elite Presentation Architect. Your task is to transform the provided document into three distinct presentation decks.
 
@@ -51,27 +99,79 @@ export const analyzePdfForSlides = async (rawText: string): Promise<any> => {
       required: ["title", "bullets", "category", "diagramType"] // imagePrompt is not strictly required in validation, though we check it in logic
     };
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash', 
-      contents: prompt,
-      config: {
-        thinkingConfig: { thinkingBudget: 4096 }, // Max thinking for complex data structuring
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            executiveDeck: { type: Type.ARRAY, items: slideSchema },
-            creativeDeck: { type: Type.ARRAY, items: slideSchema },
-            technicalDeck: { type: Type.ARRAY, items: slideSchema }
-          },
-          required: ["executiveDeck", "creativeDeck", "technicalDeck"]
-        }
-      }
-    });
+      // Create timeout promise
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error(`API request timed out after ${timeoutMs}ms`)), timeoutMs);
+      });
 
-    return JSON.parse(response.text || "{}");
-  } catch (error) {
-    console.error("Gemini Synthesis Error:", error);
-    return null;
+      // Race between API call and timeout
+      const apiCallPromise = ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: prompt,
+        config: {
+          thinkingConfig: { thinkingBudget: 4096 }, // Max thinking for complex data structuring
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              executiveDeck: { type: Type.ARRAY, items: slideSchema },
+              creativeDeck: { type: Type.ARRAY, items: slideSchema },
+              technicalDeck: { type: Type.ARRAY, items: slideSchema }
+            },
+            required: ["executiveDeck", "creativeDeck", "technicalDeck"]
+          }
+        }
+      });
+
+      const response = await Promise.race([apiCallPromise, timeoutPromise]);
+
+    // Safe JSON parsing with error handling
+    if (!response.text) {
+      throw new Error("Gemini returned empty response");
+    }
+
+    let parsedResponse: GeminiResponse;
+    try {
+      parsedResponse = JSON.parse(response.text);
+    } catch (parseError) {
+      console.error("Failed to parse Gemini response:", parseError);
+      throw new Error("Invalid JSON response from Gemini API");
+    }
+
+    // Validate response structure
+    if (!parsedResponse.executiveDeck || !parsedResponse.creativeDeck || !parsedResponse.technicalDeck) {
+      throw new Error("Gemini response missing required deck fields");
+    }
+
+    // Validate each deck is an array
+    if (!Array.isArray(parsedResponse.executiveDeck) ||
+        !Array.isArray(parsedResponse.creativeDeck) ||
+        !Array.isArray(parsedResponse.technicalDeck)) {
+      throw new Error("Gemini response decks are not arrays");
+    }
+
+      return parsedResponse;
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+      console.error(`Gemini Synthesis Error (attempt ${attempt + 1}):`, lastError);
+
+      // Don't retry on certain errors
+      const errorMessage = lastError.message.toLowerCase();
+      if (errorMessage.includes('invalid') ||
+          errorMessage.includes('parse') ||
+          errorMessage.includes('json')) {
+        // These are not transient errors, don't retry
+        break;
+      }
+
+      // If this was the last attempt, break
+      if (attempt === maxRetries) {
+        break;
+      }
+    }
   }
+
+  // All retries exhausted
+  console.error("All retry attempts exhausted. Final error:", lastError);
+  return null;
 };

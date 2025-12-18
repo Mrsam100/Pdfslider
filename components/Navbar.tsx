@@ -18,7 +18,7 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ onNavClick, activeView, shopName, isLoggedIn, onLoginClick }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const isLanding = activeView === 'landing';
-  
+
   const navItems = [
     { name: 'Home', id: 'landing' },
     { name: 'Studio', id: 'workbench' },
@@ -32,135 +32,165 @@ const Navbar: React.FC<NavbarProps> = ({ onNavClick, activeView, shopName, isLog
 
   return (
     <>
-      <div className="fixed top-0 left-0 w-full z-[150] px-4 py-4 md:py-6 pointer-events-none">
-        <nav className="max-w-[1400px] mx-auto w-full flex items-center justify-between px-4 md:px-6 py-3 bg-white/90 backdrop-blur-xl border border-white/50 shadow-sm rounded-2xl md:rounded-full pointer-events-auto transition-all duration-300 relative z-[160]">
-          
-          {/* Logo Section */}
-          <div className="flex items-center gap-3 cursor-pointer group" onClick={() => handleMobileNav('landing')}>
-            <div className="w-10 h-10 rounded-xl bg-[#0F172A] flex items-center justify-center text-white font-black text-lg shadow-lg group-hover:scale-105 transition-transform">
-              P
+      <div className="position-fixed top-0 start-0 w-100" style={{ zIndex: 150, padding: '1rem' }}>
+        <nav className="navbar navbar-expand-lg navbar-light bg-white bg-opacity-90 border border-light shadow-sm rounded-pill mx-auto"
+             style={{ maxWidth: '1400px', backdropFilter: 'blur(20px)', zIndex: 160 }}>
+          <div className="container-fluid px-3 px-md-4">
+
+            {/* Logo Section */}
+            <div className="navbar-brand d-flex align-items-center gap-2 cursor-pointer"
+                 onClick={() => handleMobileNav('landing')}
+                 style={{ cursor: 'pointer' }}>
+              <div className="d-flex align-items-center justify-content-center bg-dark text-white fw-bold rounded-3 shadow"
+                   style={{ width: '40px', height: '40px', fontSize: '1.125rem' }}>
+                P
+              </div>
+              <span className="fw-bold fs-5 text-dark">
+                {BRAND_NAME}
+              </span>
             </div>
-            <span className="font-bold text-lg md:text-xl tracking-tight text-[#0F172A]">
-              {BRAND_NAME}
-            </span>
-          </div>
 
-          {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-2 bg-gray-100/50 p-1.5 rounded-full border border-gray-200/50">
-             {navItems.map((item) => (
-               <button 
-                  key={item.id}
-                  onClick={() => onNavClick(item.id)} 
-                  className={`px-5 py-2 text-xs font-semibold rounded-full transition-all ${
-                    activeView === item.id 
-                      ? 'bg-white text-[#0F172A] shadow-sm' 
-                      : 'text-gray-500 hover:text-[#0F172A] hover:bg-white/50'
-                  }`}
-               >
-                 {item.name}
-               </button>
-             ))}
-          </div>
+            {/* Mobile Hamburger */}
+            <button
+              className="navbar-toggler border-0"
+              type="button"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? (
+                <svg className="w-100 h-100" style={{ width: '24px', height: '24px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              ) : (
+                <svg className="w-100 h-100" style={{ width: '24px', height: '24px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+              )}
+            </button>
 
-          {/* Desktop Action / Profile */}
-          <div className="hidden md:flex items-center gap-4">
-             {isLoggedIn ? (
-               <div className="flex items-center gap-3">
-                   <div className="text-right">
-                      <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Logged In</span>
-                      <span className="block text-xs font-bold text-[#0F172A]">{shopName}</span>
-                   </div>
-                   <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#4F46E5] to-[#0F172A] text-white flex items-center justify-center text-xs font-bold shadow-md">
-                      {shopName?.substring(0,1).toUpperCase() || "U"}
-                   </div>
-               </div>
-             ) : (
-               <button 
-                 onClick={onLoginClick}
-                 className="relative group overflow-hidden px-8 py-2.5 rounded-full font-bold text-xs uppercase tracking-wide transition-all duration-300 hover:scale-105"
-               >
-                 <div className="absolute inset-0 bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#4F46E5] animate-gradient-x"></div>
-                 <div className="absolute inset-0 opacity-0 group-hover:opacity-20 bg-white transition-opacity"></div>
-                 <span className="relative text-white flex items-center gap-2">
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+            {/* Desktop Nav */}
+            <div className="collapse navbar-collapse justify-content-center">
+              <div className="d-flex align-items-center gap-2 bg-light bg-opacity-50 p-2 rounded-pill border border-light">
+                {navItems.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => onNavClick(item.id)}
+                    className={`btn btn-sm rounded-pill fw-semibold ${
+                      activeView === item.id
+                        ? 'btn-light text-dark shadow-sm'
+                        : 'btn-link text-secondary text-decoration-none'
+                    }`}
+                    style={{ fontSize: '0.75rem', padding: '0.5rem 1.25rem' }}
+                  >
+                    {item.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Desktop Action / Profile */}
+            <div className="d-none d-lg-flex align-items-center gap-3">
+              {isLoggedIn ? (
+                <div className="d-flex align-items-center gap-3">
+                  <div className="text-end">
+                    <span className="d-block text-muted fw-bold text-uppercase" style={{ fontSize: '0.625rem', letterSpacing: '0.05em' }}>Logged In</span>
+                    <span className="d-block text-dark fw-bold" style={{ fontSize: '0.75rem' }}>{shopName}</span>
+                  </div>
+                  <div className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow"
+                       style={{ width: '36px', height: '36px', fontSize: '0.75rem', background: 'linear-gradient(135deg, #4F46E5, #0F172A)' }}>
+                    {shopName?.substring(0,1).toUpperCase() || "U"}
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={onLoginClick}
+                  className="btn btn-primary rounded-pill fw-bold text-uppercase position-relative overflow-hidden"
+                  style={{ fontSize: '0.75rem', letterSpacing: '0.05em', padding: '0.625rem 2rem', background: 'linear-gradient(90deg, #4F46E5, #6366F1, #4F46E5)' }}
+                >
+                  <span className="d-flex align-items-center gap-2">
+                    <svg style={{ width: '12px', height: '12px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                    </svg>
                     Login
-                 </span>
-               </button>
-             )}
-             
-             <button 
-               onClick={() => onNavClick(isLanding ? 'workbench' : 'landing')}
-               className="px-6 py-2.5 bg-[#0F172A] text-white text-xs font-bold tracking-wide rounded-full shadow-lg hover:shadow-xl hover:bg-black transition-all"
-             >
-               {isLanding ? 'Open Studio' : 'Exit Studio'}
-             </button>
-          </div>
+                  </span>
+                </button>
+              )}
 
-          {/* Mobile Hamburger */}
-          <button 
-            className="md:hidden p-2 text-[#0F172A]"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            {isMobileMenuOpen ? (
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            ) : (
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-            )}
-          </button>
+              <button
+                onClick={() => onNavClick(isLanding ? 'workbench' : 'landing')}
+                className="btn btn-dark rounded-pill fw-bold shadow"
+                style={{ fontSize: '0.75rem', letterSpacing: '0.05em', padding: '0.625rem 1.5rem' }}
+              >
+                {isLanding ? 'Open Studio' : 'Exit Studio'}
+              </button>
+            </div>
+          </div>
         </nav>
 
         {/* Mobile Menu Dropdown */}
-        <div className={`fixed inset-x-4 top-20 bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl border border-gray-100 overflow-hidden transition-all duration-300 origin-top md:hidden pointer-events-auto ${isMobileMenuOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4 pointer-events-none'}`}>
-          <div className="p-6 flex flex-col gap-4">
+        <div className={`position-fixed start-0 end-0 bg-white bg-opacity-95 rounded-4 shadow border border-light overflow-hidden transition-all ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0'}`}
+             style={{
+               top: '80px',
+               margin: '0 1rem',
+               backdropFilter: 'blur(20px)',
+               transform: isMobileMenuOpen ? 'scale(1) translateY(0)' : 'scale(0.95) translateY(-1rem)',
+               pointerEvents: isMobileMenuOpen ? 'auto' : 'none',
+               transition: 'all 0.3s ease'
+             }}>
+          <div className="p-4 d-flex flex-column gap-3">
             {navItems.map((item) => (
-               <button 
-                  key={item.id}
-                  onClick={() => handleMobileNav(item.id)} 
-                  className={`w-full py-4 text-left px-4 rounded-xl text-sm font-bold transition-all ${
-                    activeView === item.id 
-                      ? 'bg-[#F1F5F9] text-[#0F172A]' 
-                      : 'text-gray-500 hover:bg-gray-50'
-                  }`}
-               >
-                 {item.name}
-               </button>
-             ))}
-             
-             <div className="h-px bg-gray-100 my-2"></div>
-             
-             {isLoggedIn ? (
-               <div className="flex items-center gap-3 px-4 py-2">
-                   <div className="w-10 h-10 rounded-full bg-[#0F172A] text-white flex items-center justify-center text-sm font-bold">
-                      {shopName?.substring(0,1).toUpperCase()}
-                   </div>
-                   <div>
-                      <span className="block text-sm font-bold text-[#0F172A]">{shopName}</span>
-                      <span className="block text-xs text-green-600 font-medium">● Active Session</span>
-                   </div>
-               </div>
-             ) : (
-               <button 
-                 onClick={() => { onLoginClick && onLoginClick(); setIsMobileMenuOpen(false); }}
-                 className="w-full py-4 text-left px-4 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-[#4F46E5] to-[#6366F1] shadow-lg"
-               >
-                 Login to Workspace
-               </button>
-             )}
+              <button
+                key={item.id}
+                onClick={() => handleMobileNav(item.id)}
+                className={`btn w-100 text-start rounded-3 fw-bold ${
+                  activeView === item.id
+                    ? 'btn-light text-dark'
+                    : 'btn-link text-secondary text-decoration-none'
+                }`}
+                style={{ fontSize: '0.875rem', padding: '1rem' }}
+              >
+                {item.name}
+              </button>
+            ))}
 
-            <button 
-               onClick={() => handleMobileNav(isLanding ? 'workbench' : 'landing')}
-               className="w-full py-4 bg-[#0F172A] text-white rounded-xl text-sm font-bold uppercase tracking-wide shadow-lg"
-             >
-               {isLanding ? 'Launch Studio' : 'Exit Studio'}
-             </button>
+            <hr className="my-2" />
+
+            {isLoggedIn ? (
+              <div className="d-flex align-items-center gap-3 px-3 py-2">
+                <div className="rounded-circle bg-dark text-white d-flex align-items-center justify-content-center fw-bold"
+                     style={{ width: '40px', height: '40px', fontSize: '0.875rem' }}>
+                  {shopName?.substring(0,1).toUpperCase()}
+                </div>
+                <div>
+                  <span className="d-block text-dark fw-bold" style={{ fontSize: '0.875rem' }}>{shopName}</span>
+                  <span className="d-block text-success fw-medium" style={{ fontSize: '0.75rem' }}>● Active Session</span>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={() => { onLoginClick && onLoginClick(); setIsMobileMenuOpen(false); }}
+                className="btn w-100 btn-primary rounded-3 fw-bold text-white shadow"
+                style={{ fontSize: '0.875rem', padding: '1rem', background: 'linear-gradient(90deg, #4F46E5, #6366F1)' }}
+              >
+                Login to Workspace
+              </button>
+            )}
+
+            <button
+              onClick={() => handleMobileNav(isLanding ? 'workbench' : 'landing')}
+              className="btn w-100 btn-dark rounded-3 fw-bold text-uppercase shadow"
+              style={{ fontSize: '0.875rem', letterSpacing: '0.05em', padding: '1rem' }}
+            >
+              {isLanding ? 'Launch Studio' : 'Exit Studio'}
+            </button>
           </div>
         </div>
       </div>
-      
+
       {/* Mobile Backdrop */}
       {isMobileMenuOpen && (
-        <div 
-          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[140] md:hidden"
+        <div
+          className="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-25"
+          style={{ backdropFilter: 'blur(4px)', zIndex: 140 }}
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}

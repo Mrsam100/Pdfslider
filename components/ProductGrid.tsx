@@ -1,7 +1,7 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
+ */
 
 import React, { useState, useMemo } from 'react';
 import { Paper } from '../types';
@@ -49,32 +49,33 @@ const ProductGrid: React.FC<ProductGridProps> = ({
   }, [searchQuery, papers]);
 
   return (
-    <section id="products" className="py-20 px-6 md:px-12 relative">
-      <div className="max-w-[1400px] mx-auto">
+    <section id="products" className="px-4 px-md-5 position-relative" style={{paddingTop: '5rem', paddingBottom: '5rem'}}>
+      <div className="mx-auto" style={{maxWidth: '1400px'}}>
         
         {/* Header Area */}
-        <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+        <div className="d-flex flex-column flex-md-row justify-content-between align-items-end mb-5 gap-4">
           <div>
-            <span className="text-xs font-bold uppercase tracking-widest text-[#6A4FBF] mb-2 block">The Modules</span>
-            <h2 className="text-4xl font-extrabold text-[#4A4A4A] mb-2">
+            <span className="fs-6 fw-bold text-uppercase d-block mb-2" style={{letterSpacing: '0.25em', color: '#6A4FBF'}}>The Modules</span>
+            <h2 className="fs-1 fw-bolder mb-2" style={{color: '#4A4A4A'}}>
                 Learning Adventures
             </h2>
-            <p className="text-lg text-gray-500">
+            <p className="fs-5 text-muted">
                 Select a module to preview the experience.
             </p>
           </div>
 
           {/* Search */}
           {!hideFilters && (
-            <div className="relative w-full md:w-80">
+            <div className="position-relative w-100" style={{width: '20rem'}}>
                 <input 
                     type="text" 
                     placeholder="Search topics..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-white border border-gray-200 rounded-2xl px-5 py-3 text-[#4A4A4A] outline-none focus:ring-2 focus:ring-[#FFB673] shadow-inner transition-all"
+                    className="w-100 bg-white border rounded-3 px-3 py-2"
+                    style={{color: '#4A4A4A', outline: 'none', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)', transition: 'all 0.2s'}}
                 />
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="#999" className="w-5 h-5 absolute right-4 top-3.5">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="#999" className="position-absolute" style={{right: '1rem', top: '0.875rem', width: '1.25rem', height: '1.25rem'}}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                 </svg>
             </div>
@@ -82,10 +83,10 @@ const ProductGrid: React.FC<ProductGridProps> = ({
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8">
+        <div className="row g-4">
           {filteredPapers.length > 0 ? (
             filteredPapers.map(paper => (
-              <div key={paper.id} className="h-full">
+              <div key={paper.id} className="col-12 col-md-6 col-lg-4 col-xl-4 h-100">
                   <ProductCard 
                       product={paper} 
                       onClick={onProductClick}
@@ -98,8 +99,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({
               </div>
             ))
           ) : (
-            <div className="col-span-full py-20 text-center">
-              <p className="text-gray-400 font-bold text-lg">No modules found.</p>
+            <div className="col-12 text-center" style={{padding: '5rem 0'}}>
+              <p className="text-secondary fw-bold fs-5">No modules found.</p>
             </div>
           )}
         </div>

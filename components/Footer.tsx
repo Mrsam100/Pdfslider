@@ -12,41 +12,60 @@ interface FooterProps {
 
 const Footer: React.FC<FooterProps> = ({ onLinkClick }) => {
   return (
-    <footer className="relative pt-32 pb-12 px-6 mt-0 overflow-hidden bg-[#0F172A]">
-        {/* Background Elements */}
-        <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5"></div>
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-[#4F46E5] opacity-20 rounded-full blur-[100px]"></div>
-        
-        <div className="max-w-[1200px] mx-auto relative z-10">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20 pb-16 border-b border-white/10">
-                <div className="text-center lg:text-left">
-                    <h3 className="text-3xl md:text-5xl font-black text-white mb-6 leading-tight">
-                        Your Strategy. <br/>
-                        <span className="text-[#4F46E5]">Automated.</span>
-                    </h3>
-                    <p className="text-white/60 text-lg font-medium max-w-md mx-auto lg:mx-0">
-                        Access your entire history of generated presentations in the library.
-                    </p>
-                </div>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-end">
-                    {/* Fixed: Link navigates to 'vault' (Library) */}
-                    <button onClick={(e) => onLinkClick(e, 'vault')} className="px-10 py-5 bg-white text-[#0F172A] font-black uppercase tracking-widest rounded-full shadow-2xl transition-transform hover:scale-105 active:scale-95 text-xs">
-                        Open Library Feed
-                    </button>
-                </div>
-            </div>
+    <footer className="position-relative overflow-hidden bg-dark text-white" style={{ paddingTop: '8rem', paddingBottom: '3rem', backgroundColor: '#0F172A' }}>
+      {/* Background Elements */}
+      <div className="position-absolute top-0 start-0 w-100 h-100"
+           style={{
+             backgroundImage: "url('https://www.transparenttextures.com/patterns/cubes.png')",
+             opacity: 0.05
+           }}></div>
+      <div className="position-absolute"
+           style={{
+             top: '-10rem',
+             right: '-10rem',
+             width: '24rem',
+             height: '24rem',
+             backgroundColor: '#4F46E5',
+             opacity: 0.2,
+             borderRadius: '50%',
+             filter: 'blur(100px)'
+           }}></div>
 
-            <div className="flex flex-col md:flex-row justify-between items-center gap-8 text-white/40">
-                <div className="text-[11px] font-bold uppercase tracking-widest">
-                    © 2025 PDFToSlides Pro Enterprise
-                </div>
-                <div className="flex gap-8">
-                    <a href="#" className="hover:text-white transition-colors text-sm font-bold">Privacy</a>
-                    <a href="#" className="hover:text-white transition-colors text-sm font-bold">Terms</a>
-                    <a href="#" className="hover:text-white transition-colors text-sm font-bold">Contact</a>
-                </div>
+      <div className="container position-relative" style={{ maxWidth: '1200px', zIndex: 10 }}>
+        <div className="row g-4 align-items-center mb-5 pb-5 border-bottom" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
+          <div className="col-12 col-lg-6 text-center text-lg-start">
+            <h3 className="display-5 fw-black text-white mb-4">
+              Your Strategy. <br/>
+              <span style={{ color: '#4F46E5' }}>Automated.</span>
+            </h3>
+            <p className="fs-5 fw-medium mx-auto mx-lg-0" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '28rem' }}>
+              Access your entire history of generated presentations in the library.
+            </p>
+          </div>
+          <div className="col-12 col-lg-6">
+            <div className="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-end">
+              <button
+                onClick={(e) => onLinkClick(e, 'vault')}
+                className="btn btn-light rounded-pill fw-black text-uppercase shadow-lg px-5 py-3"
+                style={{ letterSpacing: '0.1em', fontSize: '0.75rem' }}
+              >
+                Open Library Feed
+              </button>
             </div>
+          </div>
         </div>
+
+        <div className="d-flex flex-column flex-md-row justify-content-between align-items-center gap-4" style={{ color: 'rgba(255,255,255,0.4)' }}>
+          <div className="fw-bold text-uppercase" style={{ fontSize: '0.6875rem', letterSpacing: '0.1em' }}>
+            © 2025 PDFToSlides Pro Enterprise
+          </div>
+          <div className="d-flex gap-4">
+            <a href="#" className="text-decoration-none fw-bold" style={{ color: 'inherit', fontSize: '0.875rem' }}>Privacy</a>
+            <a href="#" className="text-decoration-none fw-bold" style={{ color: 'inherit', fontSize: '0.875rem' }}>Terms</a>
+            <a href="#" className="text-decoration-none fw-bold" style={{ color: 'inherit', fontSize: '0.875rem' }}>Contact</a>
+          </div>
+        </div>
+      </div>
     </footer>
   );
 };

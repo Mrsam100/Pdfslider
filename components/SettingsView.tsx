@@ -1,8 +1,7 @@
-
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
+ */
 
 import React from 'react';
 import { AppSettings } from '../types';
@@ -25,37 +24,38 @@ const SettingsView: React.FC<SettingsProps> = ({ settings, onUpdate, shopName, o
   };
 
   return (
-    <div className="pt-32 pb-24 px-6 max-w-[1000px] mx-auto animate-fade-in">
-      <div className="text-center md:text-left mb-16">
-        <span className="clay-text-convex text-[10px] font-black text-[#6A4FBF] uppercase tracking-widest mb-3">User Options</span>
-        <h1 className="text-6xl font-black text-[#4A4A4A] tracking-tighter">System Preferences</h1>
+    <div className="pt-8 pb-6 px-3 mx-auto" style={{maxWidth: '1000px', animation: 'fadeIn 0.6s ease-out'}}>
+      <div className="text-center text-md-start mb-5">
+        <span className="clay-text-convex fs-6 fw-bolder text-uppercase mb-2" style={{letterSpacing: '0.25em', color: '#6A4FBF'}}>User Options</span>
+        <h1 className="fs-1 fw-bolder" style={{color: '#4A4A4A', letterSpacing: '-0.05em'}}>System Preferences</h1>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="clay-card p-10 bg-white border-4 border-white shadow-xl">
-          <h3 className="text-2xl font-black mb-8 text-[#4A4A4A]">Identity</h3>
-          <div className="space-y-6">
+      <div className="row g-4">
+        <div className="col-12 col-lg-6 clay-card p-5 bg-white border border-4 shadow">
+          <h3 className="fs-3 fw-bolder mb-4" style={{color: '#4A4A4A'}}>Identity</h3>
+          <div style={{display: 'flex', flexDirection: 'column', gap: '1.5rem'}}>
             <div>
-              <label className="text-[10px] font-black uppercase text-gray-400 ml-4 mb-2 block">Your Full Name</label>
-              <input 
-                type="text" 
-                className="w-full clay-pill-container px-8 py-5 font-black text-xl outline-none shadow-inner bg-white/60" 
-                value={shopName} 
-                onChange={e => onShopNameChange(e.target.value)} 
+              <label className="fs-6 fw-bolder text-uppercase text-secondary ms-3 mb-2 d-block">Your Full Name</label>
+              <input
+                type="text"
+                className="w-100 clay-pill-container px-4 py-3 fw-bolder fs-4 outline-none shadow-sm"
+                style={{backgroundColor: 'rgba(255,255,255,0.6)'}}
+                value={shopName}
+                onChange={e => onShopNameChange(e.target.value)}
               />
             </div>
           </div>
         </div>
 
-        <div className="clay-card p-10 bg-white border-4 border-white shadow-xl flex flex-col justify-between">
-          <h3 className="text-2xl font-black mb-8 text-[#4A4A4A]">Experience</h3>
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 gap-4">
-              <div>
-                <label className="text-[10px] font-black uppercase text-gray-400 ml-4 mb-2 block">Primary Language</label>
-                <select 
-                  className="w-full clay-pill-container px-6 py-4 font-black outline-none bg-white shadow-inner" 
-                  value={settings.language} 
+        <div className="col-12 col-lg-6 clay-card p-5 bg-white border border-4 shadow d-flex flex-column justify-content-between">
+          <h3 className="fs-3 fw-bolder mb-4" style={{color: '#4A4A4A'}}>Experience</h3>
+          <div style={{display: 'flex', flexDirection: 'column', gap: '1.5rem'}}>
+            <div className="row g-3">
+              <div className="col-12">
+                <label className="fs-6 fw-bolder text-uppercase text-secondary ms-3 mb-2 d-block">Primary Language</label>
+                <select
+                  className="w-100 clay-pill-container px-3 py-3 fw-bolder outline-none bg-white shadow-sm"
+                  value={settings.language}
                   onChange={e => onUpdate({ language: e.target.value as any })}
                 >
                   <option value="en">English</option>
@@ -66,65 +66,68 @@ const SettingsView: React.FC<SettingsProps> = ({ settings, onUpdate, shopName, o
                 </select>
               </div>
             </div>
-            
-            <div className="flex items-center justify-between py-4 border-t border-dashed border-gray-100 mt-4">
-              <div className="flex flex-col">
-                <span className="font-black text-lg text-[#4A4A4A]">Dark Mode Rendering</span>
-                <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Optimized for high-contrast</span>
+
+            <div className="d-flex align-items-center justify-content-between py-3 border-top border-dashed mt-3">
+              <div className="d-flex flex-column">
+                <span className="fw-bolder fs-5" style={{color: '#4A4A4A'}}>Dark Mode Rendering</span>
+                <span className="fs-6 fw-bold text-secondary text-uppercase" style={{letterSpacing: '0.25em'}}>Optimized for high-contrast</span>
               </div>
-              <button 
-                onClick={() => onUpdate({ darkMode: !settings.darkMode })} 
-                className={`w-16 h-8 rounded-full transition-all relative shadow-inner border-2 border-white ${settings.darkMode ? 'bg-[#6A4FBF]' : 'bg-gray-100'}`}
+              <button
+                onClick={() => onUpdate({ darkMode: !settings.darkMode })}
+                className="rounded-pill transition-all position-relative shadow-sm border border-2"
+                style={{width: '64px', height: '32px', backgroundColor: settings.darkMode ? '#6A4FBF' : '#f8f9fa'}}
               >
-                <div className={`absolute top-0.5 w-6 h-6 rounded-full shadow-md transition-all ${settings.darkMode ? 'right-0.5 bg-white' : 'left-0.5 bg-white'}`}></div>
+                <div className="position-absolute top-0 w-6 h-6 rounded-pill shadow transition-all" style={{backgroundColor: 'white', transform: settings.darkMode ? 'translateX(32px)' : 'translateX(4px)'}}></div>
               </button>
             </div>
           </div>
         </div>
-        
-        <div className="col-span-1 lg:col-span-2 clay-card p-10 bg-white/50 border-4 border-white shadow-xl">
-           <div className="mb-8">
-              <h3 className="text-2xl font-black text-[#4A4A4A] mb-2">Enabled Export Formats</h3>
-              <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest leading-relaxed">Choose which slide formats are available in your library.</p>
+
+        <div className="col-12 col-lg-6 clay-card p-5 border border-4 shadow" style={{backgroundColor: 'rgba(255,255,255,0.5)'}}>
+           <div className="mb-4">
+              <h3 className="fs-3 fw-bolder mb-2" style={{color: '#4A4A4A'}}>Enabled Export Formats</h3>
+              <p className="fs-6 fw-bold text-secondary text-uppercase" style={{letterSpacing: '0.25em', lineHeight: 1.625}}>Choose which slide formats are available in your library.</p>
            </div>
-           
-           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+
+           <div className="row g-3">
               {NEWS_SOURCES.map(source => {
                 const isSelected = (settings.sources || []).includes(source.id);
                 return (
-                  <button 
-                    key={source.id}
-                    onClick={() => toggleSource(source.id)}
-                    className={`flex flex-col items-center p-4 rounded-[30px] border-2 transition-all relative group ${
-                      isSelected ? 'bg-white border-[#6A4FBF] shadow-lg' : 'bg-white/20 border-transparent hover:border-gray-200'
-                    }`}
-                  >
-                    <div className="text-3xl mb-3 group-hover:scale-110 transition-transform">
-                      {source.icon}
-                    </div>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-[#4A4A4A] truncate w-full px-2">
-                      {source.name}
-                    </span>
-                    {isSelected && (
-                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-[#2AB9A9] rounded-full flex items-center justify-center text-white text-[10px] shadow-lg">
-                        ✓
+                  <div key={source.id} className="col-6 col-md-4 col-lg-2">
+                    <button
+                      onClick={() => toggleSource(source.id)}
+                      className="d-flex flex-column align-items-center p-3 rounded-3 border border-2 transition-all position-relative group w-100"
+                      style={{backgroundColor: isSelected ? 'white' : 'rgba(255,255,255,0.2)', borderColor: isSelected ? '#6A4FBF' : 'transparent', boxShadow: isSelected ? '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)' : ''}}
+                      onMouseEnter={(e) => { if (!isSelected) { e.currentTarget.style.borderColor = '#dee2e6'; e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.2)'; } }}
+                      onMouseLeave={(e) => { if (!isSelected) { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.2)'; } }}
+                    >
+                      <div className="fs-2 mb-2 transition-transform" onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'} onMouseLeave={(e) => e.currentTarget.style.transform = ''}>
+                        {source.icon}
                       </div>
-                    )}
-                  </button>
+                      <span className="fs-6 fw-bolder text-uppercase text-truncate w-100 px-2" style={{letterSpacing: '0.25em', color: '#4A4A4A'}}>
+                        {source.name}
+                      </span>
+                      {isSelected && (
+                        <div className="position-absolute top-0 end-0 w-6 h-6 bg-success rounded-circle d-flex align-items-center justify-content-center text-white fs-6 shadow">
+                          ✓
+                        </div>
+                      )}
+                    </button>
+                  </div>
                 );
               })}
            </div>
         </div>
 
-        <div className="col-span-1 lg:col-span-2 clay-card p-8 bg-[#FFB673] text-white text-center shadow-xl">
-           <h4 className="text-xl font-black mb-2 italic">"Everyone emails PDFs that should be slides."</h4>
-           <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">- Larry Page</p>
+        <div className="col-12 col-lg-6 clay-card p-4 text-white text-center shadow" style={{backgroundColor: '#FFB673'}}>
+           <h4 className="fs-4 fw-bolder mb-2 fst-italic">"Everyone emails PDFs that should be slides."</h4>
+           <p className="fs-6 fw-bolder text-uppercase opacity-80" style={{letterSpacing: '0.2em'}}>- Larry Page</p>
         </div>
       </div>
-      
-      <div className="mt-20 text-center opacity-40">
-         <div className="w-16 h-16 rounded-[25px] bg-gray-200 mx-auto flex items-center justify-center text-3xl mb-4 grayscale">📄</div>
-         <p className="text-[10px] font-black uppercase tracking-[0.4em]">PDFToSlides Engine v1.0.0 • Cloud Core</p>
+
+      <div className="mt-5 text-center opacity-40">
+         <div className="rounded-3 bg-light mx-auto d-flex align-items-center justify-content-center fs-2 mb-3 grayscale" style={{width: '64px', height: '64px'}}>📄</div>
+         <p className="fs-6 fw-bolder text-uppercase" style={{letterSpacing: '0.4em'}}>PDFToSlides Engine v1.0.0 • Cloud Core</p>
       </div>
     </div>
   );

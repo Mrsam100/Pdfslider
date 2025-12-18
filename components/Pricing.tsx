@@ -8,16 +8,16 @@ import React from 'react';
 
 const Pricing: React.FC = () => {
   const plans = [
-    { 
-      name: "Monthly", 
-      price: "$19", 
+    {
+      name: "Monthly",
+      price: "$19",
       period: "/month",
       features: ["Unlimited Sales", "Inventory Manager", "Customer CRM", "Email Reports"],
       color: "#FFB673"
     },
-    { 
-      name: "Annual", 
-      price: "$159", 
+    {
+      name: "Annual",
+      price: "$159",
       period: "/year",
       features: ["Everything in Monthly", "2 Months Free", "Priority Support", "Custom QR Codes"],
       color: "#6A4FBF",
@@ -26,40 +26,45 @@ const Pricing: React.FC = () => {
   ];
 
   return (
-    <section className="py-24 px-6 bg-white/20">
-      <div className="max-w-[1000px] mx-auto text-center mb-16">
-        <span className="clay-text-convex text-xs font-bold uppercase tracking-widest text-[#6A4FBF] mb-4">Simple Pricing</span>
-        <h2 className="text-4xl md:text-5xl font-extrabold text-[#4A4A4A] mb-6">Pricing for Every Shop</h2>
-        <p className="text-lg text-gray-500 font-medium">No hidden fees. No complicated contracts. Just simple plans.</p>
+    <section className="py-5 px-3" style={{ backgroundColor: 'rgba(255,255,255,0.2)' }}>
+      <div className="text-center mb-5 mx-auto" style={{ maxWidth: '1000px' }}>
+        <span className="clay-text-convex fw-bold text-uppercase d-block mb-3" style={{ fontSize: '0.75rem', letterSpacing: '0.1em', color: '#6A4FBF' }}>Simple Pricing</span>
+        <h2 className="display-5 fw-bolder text-dark mb-4">Pricing for Every Shop</h2>
+        <p className="fs-5 text-secondary fw-medium">No hidden fees. No complicated contracts. Just simple plans.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-[900px] mx-auto">
+      <div className="row g-4 mx-auto" style={{ maxWidth: '900px' }}>
         {plans.map((plan, idx) => (
-          <div key={idx} className={`clay-card p-12 relative flex flex-col items-center ${plan.popular ? 'border-2 border-[#6A4FBF]' : ''}`}>
-             {plan.popular && (
-                <div className="absolute -top-4 bg-[#6A4FBF] text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest">Most Popular</div>
-             )}
-             <h3 className="text-2xl font-extrabold text-[#4A4A4A] mb-4">{plan.name}</h3>
-             <div className="flex items-baseline gap-1 mb-8">
-                <span className="text-5xl font-extrabold text-[#4A4A4A]">{plan.price}</span>
-                <span className="text-gray-400 font-medium">{plan.period}</span>
-             </div>
-             <ul className="space-y-4 mb-10 w-full">
-                {plan.features.map((f, i) => (
-                   <li key={i} className="flex items-center gap-3 text-gray-500 font-medium">
-                      <div className="w-5 h-5 rounded-full bg-[#2AB9A9] flex items-center justify-center text-white text-[10px]">✓</div>
-                      {f}
-                   </li>
-                ))}
-             </ul>
-             <button className={`w-full py-4 rounded-full font-extrabold text-lg transition-all shadow-lg ${plan.popular ? 'bg-[#6A4FBF] text-white hover:bg-[#583eb5]' : 'bg-white text-[#4A4A4A] hover:shadow-xl'}`}>
-                Choose {plan.name}
-             </button>
+          <div key={idx} className="col-12 col-md-6">
+            <div className={`clay-card p-5 position-relative d-flex flex-column align-items-center ${plan.popular ? 'border border-3' : ''}`}
+                 style={plan.popular ? { borderColor: '#6A4FBF' } : {}}>
+               {plan.popular && (
+                  <div className="position-absolute bg-primary text-white px-3 py-1 rounded-pill fw-bold text-uppercase" style={{ top: '-1rem', fontSize: '0.75rem', letterSpacing: '0.1em', backgroundColor: '#6A4FBF' }}>Most Popular</div>
+               )}
+               <h3 className="h4 fw-bolder text-dark mb-3">{plan.name}</h3>
+               <div className="d-flex align-items-baseline gap-1 mb-4">
+                  <span className="display-4 fw-bolder text-dark">{plan.price}</span>
+                  <span className="text-secondary fw-medium">{plan.period}</span>
+               </div>
+               <ul className="list-unstyled w-100 mb-4">
+                  {plan.features.map((f, i) => (
+                     <li key={i} className="d-flex align-items-center gap-2 text-secondary fw-medium mb-3">
+                        <div className="rounded-circle d-flex align-items-center justify-content-center text-white"
+                             style={{ width: '1.25rem', height: '1.25rem', backgroundColor: '#2AB9A9', fontSize: '0.625rem' }}>✓</div>
+                        {f}
+                     </li>
+                  ))}
+               </ul>
+               <button className={`btn w-100 py-3 rounded-pill fw-bolder fs-5 shadow ${plan.popular ? 'btn-primary text-white' : 'btn-light text-dark'}`}
+                       style={plan.popular ? { backgroundColor: '#6A4FBF', borderColor: '#6A4FBF' } : {}}>
+                  Choose {plan.name}
+               </button>
+            </div>
           </div>
         ))}
       </div>
-      
-      <div className="text-center mt-12 text-gray-400 font-medium">
+
+      <div className="text-center mt-4 text-secondary fw-medium">
           Start with a 14-day free trial. No credit card required.
       </div>
     </section>

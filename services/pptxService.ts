@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
+// Type declarations for PptxGenJS library
 declare const PptxGenJS: any;
 import { SlideData } from '../types';
 
@@ -14,6 +15,22 @@ interface ThemeConfig {
   font: string;
   chartColors: string[];
 }
+
+// Sanitize color values to prevent injection
+const sanitizeColor = (color: string): string => {
+  // Only allow 6-digit hex colors (without #)
+  return color.replace(/[^0-9A-Fa-f]/g, '').substring(0, 6);
+};
+
+// Sanitize text prompts for URL construction
+const sanitizePrompt = (prompt: string): string => {
+  // Remove potentially dangerous characters and limit length
+  return prompt
+    .replace(/[<>\"'&]/g, '') // Remove HTML/script special chars
+    .replace(/[\r\n\t]/g, ' ') // Replace newlines/tabs with spaces
+    .trim()
+    .substring(0, 500); // Limit length to 500 chars
+};
 
 const THEMES: Record<string, ThemeConfig> = {
   executive: {
@@ -43,6 +60,16 @@ const THEMES: Record<string, ThemeConfig> = {
 };
 
 export const generatePptx = async (slides: SlideData[], fileName: string, themeName: 'executive' | 'creative' | 'minimal' = 'executive') => {
+  // Check if PptxGenJS is loaded
+  if (typeof PptxGenJS === 'undefined') {
+    throw new Error('PptxGenJS library not loaded. Please refresh the page and try again.');
+  }
+
+  // Validate inputs
+  if (!slides || slides.length === 0) {
+    throw new Error('No slides to export');
+  }
+
   const pptx = new PptxGenJS();
   const theme = THEMES[themeName];
   
@@ -59,7 +86,8 @@ export const generatePptx = async (slides: SlideData[], fileName: string, themeN
     cover.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: 0.5, h: '100%', fill: { color: theme.accent } });
   } else if (themeName === 'creative') {
     // Add a generated abstract background for creative
-    const bgUrl = `https://image.pollinations.ai/prompt/abstract%20art%20artistic%20gradient%20${theme.primary}?width=1280&height=720&nologo=true`;
+    const sanitizedColor = sanitizeColor(theme.primary);
+    const bgUrl = `https://image.pollinations.ai/prompt/abstract%20art%20artistic%20gradient%20${sanitizedColor}?width=1280&height=720&nologo=true`;
     cover.addImage({ path: bgUrl, x: 0, y: 0, w: '100%', h: '100%', transparency: 80 });
   }
 
@@ -121,8 +149,10 @@ export const generatePptx = async (slides: SlideData[], fileName: string, themeN
 
     // AI Generated Image or Chart
     if (hasImage) {
-        // Use Pollinations.ai
-        const safePrompt = encodeURIComponent(slideData.imagePrompt + " high quality, detailed, professional, 4k, no text");
+        // Use Pollinations.ai with sanitized prompt
+        const sanitizedImagePrompt = sanitizePrompt(slideData.imagePrompt);
+        const fullPrompt = sanitizedImagePrompt + " high quality, detailed, professional, 4k, no text";
+        const safePrompt = encodeURIComponent(fullPrompt);
         const imageUrl = `https://image.pollinations.ai/prompt/${safePrompt}?width=800&height=600&nologo=true&seed=${index}`;
 
         // Visual Container Box

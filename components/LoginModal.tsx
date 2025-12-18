@@ -1,6 +1,21 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
+ *
+ * ⚠️ SECURITY WARNING ⚠️
+ * This is a CLIENT-SIDE ONLY authentication implementation for DEMO purposes.
+ * DO NOT use this in production. This implementation has critical security flaws:
+ * 1. localStorage is vulnerable to XSS attacks
+ * 2. SHA-256 is NOT suitable for password hashing (use bcrypt/scrypt on server)
+ * 3. All authentication logic is client-side and can be bypassed
+ * 4. No protection against brute force attacks
+ *
+ * For production, implement proper backend authentication with:
+ * - Server-side password hashing (bcrypt, scrypt, Argon2)
+ * - HTTPOnly secure cookies for session management
+ * - HTTPS only
+ * - Rate limiting and brute force protection
+ * - Proper CSRF protection
 */
 
 import React, { useState, useEffect } from 'react';
@@ -54,64 +69,71 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onLogin }) => {
         setLoading(false);
         return;
     }
-    if (formData.password.length < 6) {
-        setError("Password must be at least 6 characters.");
+    if (formData.password.length < 12) {
+        setError("Password must be at least 12 characters for security.");
         setLoading(false);
         return;
     }
 
     try {
         const hashedPassword = await hashPassword(formData.password);
-        
-        setTimeout(() => {
-            const dbKey = 'asn_secure_users_v2';
-            const users = JSON.parse(localStorage.getItem(dbKey) || '{}');
-            const emailKey = formData.email.toLowerCase();
 
-            if (isSignUp) {
-                // --- REGISTRATION LOGIC ---
-                if (users[emailKey]) {
-                    setError('Account already exists. Please Sign In.');
-                    setLoading(false);
-                    return;
-                }
-                
-                if (!formData.name.trim()) {
-                    setError('Full Name is required for registration.');
-                    setLoading(false);
-                    return;
-                }
+        // Process authentication immediately (removed artificial delay)
+        const dbKey = 'asn_secure_users_v2';
+        let users;
+        try {
+            users = JSON.parse(localStorage.getItem(dbKey) || '{}');
+        } catch (parseError) {
+            console.error("Failed to parse user database:", parseError);
+            setError("Authentication system error. Please clear your browser data.");
+            setLoading(false);
+            return;
+        }
+        const emailKey = formData.email.toLowerCase();
 
-                // Save new user
-                users[emailKey] = {
-                    name: formData.name,
-                    hash: hashedPassword,
-                    created: Date.now()
-                };
-                localStorage.setItem(dbKey, JSON.stringify(users));
-                
-                setSuccessMsg("Account created successfully! Logging you in...");
-                setTimeout(() => onLogin(formData.name, formData.email), 1000);
-            } else {
-                // --- LOGIN LOGIC ---
-                const user = users[emailKey];
-                
-                if (!user) {
-                    setError('Account does not exist. Please create an account first.');
-                    setLoading(false);
-                    return;
-                }
-                
-                if (user.hash !== hashedPassword) {
-                    setError('Incorrect password. Please try again.');
-                    setLoading(false);
-                    return;
-                }
-
-                setSuccessMsg("Credentials verified.");
-                setTimeout(() => onLogin(user.name, formData.email), 800);
+        if (isSignUp) {
+            // --- REGISTRATION LOGIC ---
+            if (users[emailKey]) {
+                setError('Account already exists. Please Sign In.');
+                setLoading(false);
+                return;
             }
-        }, 1000); // Network delay simulation
+
+            if (!formData.name.trim()) {
+                setError('Full Name is required for registration.');
+                setLoading(false);
+                return;
+            }
+
+            // Save new user
+            users[emailKey] = {
+                name: formData.name,
+                hash: hashedPassword,
+                created: Date.now()
+            };
+            localStorage.setItem(dbKey, JSON.stringify(users));
+
+            setSuccessMsg("Account created successfully! Logging you in...");
+            setTimeout(() => onLogin(formData.name, formData.email), 500);
+        } else {
+            // --- LOGIN LOGIC ---
+            const user = users[emailKey];
+
+            if (!user) {
+                setError('Account does not exist. Please create an account first.');
+                setLoading(false);
+                return;
+            }
+
+            if (user.hash !== hashedPassword) {
+                setError('Incorrect password. Please try again.');
+                setLoading(false);
+                return;
+            }
+
+            setSuccessMsg("Credentials verified.");
+            setTimeout(() => onLogin(user.name, formData.email), 500);
+        }
     } catch (err) {
         setError("Security module error.");
         setLoading(false);
@@ -119,95 +141,107 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onLogin }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[400] bg-[#0F172A]/90 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-        <div className="bg-white rounded-2xl max-w-sm w-full p-8 shadow-2xl animate-modal relative border border-gray-200">
-            
-            <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-black transition-colors">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
+    <div className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center p-3 animate-fade-in"
+         style={{ zIndex: 400, backgroundColor: 'rgba(15, 23, 42, 0.9)', backdropFilter: 'blur(4px)' }}>
+      <div className="bg-white rounded-4 p-4 p-md-5 shadow position-relative border border-secondary"
+           style={{ maxWidth: '24rem', width: '100%' }}>
 
-            <div className="text-center mb-6">
-                <div className="w-12 h-12 bg-[#0F172A] rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                </div>
-                <h2 className="text-2xl font-black text-[#0F172A] mb-1">{isSignUp ? 'Create Account' : 'Secure Login'}</h2>
-                <p className="text-xs text-gray-500 font-medium">Enterprise Gateway</p>
-            </div>
+        <button onClick={onClose} className="btn-close position-absolute top-0 end-0 m-3"></button>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-                {isSignUp && (
-                    <div className="animate-fade-in-up">
-                        <label className="block text-[10px] font-bold uppercase text-gray-500 mb-1">Full Name</label>
-                        <input 
-                            type="text" 
-                            className="w-full bg-gray-50 border border-gray-200 rounded-lg py-2.5 px-3 text-sm font-semibold text-[#0F172A] focus:ring-2 focus:ring-[#0F172A] focus:bg-white outline-none transition-all"
-                            value={formData.name}
-                            onChange={(e) => setFormData({...formData, name: e.target.value})}
-                            placeholder="John Doe"
-                        />
-                    </div>
-                )}
-
-                <div>
-                    <label className="block text-[10px] font-bold uppercase text-gray-500 mb-1">Email</label>
-                    <input 
-                        type="email" 
-                        required
-                        className="w-full bg-gray-50 border border-gray-200 rounded-lg py-2.5 px-3 text-sm font-semibold text-[#0F172A] focus:ring-2 focus:ring-[#0F172A] focus:bg-white outline-none transition-all"
-                        value={formData.email}
-                        onChange={(e) => setFormData({...formData, email: e.target.value})}
-                        placeholder="user@company.com"
-                    />
-                </div>
-
-                <div>
-                    <label className="block text-[10px] font-bold uppercase text-gray-500 mb-1">Password</label>
-                    <input 
-                        type="password" 
-                        required
-                        className="w-full bg-gray-50 border border-gray-200 rounded-lg py-2.5 px-3 text-sm font-semibold text-[#0F172A] focus:ring-2 focus:ring-[#0F172A] focus:bg-white outline-none transition-all"
-                        value={formData.password}
-                        onChange={(e) => setFormData({...formData, password: e.target.value})}
-                        placeholder="••••••"
-                    />
-                </div>
-
-                {error && (
-                    <div className="p-3 bg-red-50 border border-red-100 rounded-lg flex items-start gap-2 animate-pulse">
-                        <svg className="w-4 h-4 text-red-600 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        <span className="text-xs font-bold text-red-600 leading-tight">{error}</span>
-                    </div>
-                )}
-
-                {successMsg && (
-                    <div className="p-3 bg-green-50 border border-green-100 rounded-lg flex items-center gap-2">
-                        <svg className="w-4 h-4 text-green-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
-                        <span className="text-xs font-bold text-green-600">{successMsg}</span>
-                    </div>
-                )}
-
-                <button 
-                    type="submit"
-                    disabled={loading || !!successMsg}
-                    className="w-full py-3 bg-[#0F172A] text-white text-sm font-bold rounded-lg shadow-lg hover:bg-black transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
-                >
-                    {loading ? (
-                       <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                    ) : (
-                       isSignUp ? 'Create Account' : 'Sign In'
-                    )}
-                </button>
-            </form>
-
-            <div className="mt-6 pt-4 border-t border-gray-100 text-center">
-                <button 
-                    onClick={() => { setIsSignUp(!isSignUp); setError(''); setSuccessMsg(''); }}
-                    className="text-xs font-bold text-gray-500 hover:text-[#4F46E5] transition-colors"
-                >
-                    {isSignUp ? 'Already have an account? Sign In' : 'No account? Create one'}
-                </button>
-            </div>
+        <div className="text-center mb-4">
+          <div className="bg-dark rounded-3 d-flex align-items-center justify-content-center mx-auto mb-3 shadow"
+               style={{ width: '3rem', height: '3rem' }}>
+            <svg style={{ width: '1.5rem', height: '1.5rem' }} className="text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+            </svg>
+          </div>
+          <h2 className="h4 fw-black text-dark mb-1">{isSignUp ? 'Create Account' : 'Secure Login'}</h2>
+          <p className="text-secondary fw-medium" style={{ fontSize: '0.75rem' }}>Enterprise Gateway</p>
         </div>
+
+        <form onSubmit={handleSubmit}>
+          {isSignUp && (
+            <div className="mb-3 animate-fade-in-up">
+              <label className="form-label fw-bold text-secondary text-uppercase" style={{ fontSize: '0.625rem' }}>Full Name</label>
+              <input
+                type="text"
+                className="form-control bg-light border-secondary fw-semibold"
+                value={formData.name}
+                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                placeholder="John Doe"
+                style={{ fontSize: '0.875rem' }}
+              />
+            </div>
+          )}
+
+          <div className="mb-3">
+            <label className="form-label fw-bold text-secondary text-uppercase" style={{ fontSize: '0.625rem' }}>Email</label>
+            <input
+              type="email"
+              required
+              className="form-control bg-light border-secondary fw-semibold"
+              value={formData.email}
+              onChange={(e) => setFormData({...formData, email: e.target.value})}
+              placeholder="user@company.com"
+              style={{ fontSize: '0.875rem' }}
+            />
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label fw-bold text-secondary text-uppercase" style={{ fontSize: '0.625rem' }}>Password</label>
+            <input
+              type="password"
+              required
+              className="form-control bg-light border-secondary fw-semibold"
+              value={formData.password}
+              onChange={(e) => setFormData({...formData, password: e.target.value})}
+              placeholder="••••••"
+              style={{ fontSize: '0.875rem' }}
+            />
+          </div>
+
+          {error && (
+            <div className="alert alert-danger d-flex align-items-start gap-2 p-3 mb-3" role="alert">
+              <svg style={{ width: '1rem', height: '1rem' }} className="text-danger flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <span className="fw-bold" style={{ fontSize: '0.75rem', lineHeight: 1.4 }}>{error}</span>
+            </div>
+          )}
+
+          {successMsg && (
+            <div className="alert alert-success d-flex align-items-center gap-2 p-3 mb-3" role="alert">
+              <svg style={{ width: '1rem', height: '1rem' }} className="text-success flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <span className="fw-bold" style={{ fontSize: '0.75rem' }}>{successMsg}</span>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading || !!successMsg}
+            className="btn btn-dark w-100 py-2 fw-bold d-flex align-items-center justify-content-center gap-2 shadow"
+            style={{ fontSize: '0.875rem' }}
+          >
+            {loading ? (
+              <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            ) : (
+              isSignUp ? 'Create Account' : 'Sign In'
+            )}
+          </button>
+        </form>
+
+        <div className="mt-4 pt-3 border-top text-center">
+          <button
+            onClick={() => { setIsSignUp(!isSignUp); setError(''); setSuccessMsg(''); }}
+            className="btn btn-link text-secondary fw-bold text-decoration-none p-0"
+            style={{ fontSize: '0.75rem' }}
+          >
+            {isSignUp ? 'Already have an account? Sign In' : 'No account? Create one'}
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

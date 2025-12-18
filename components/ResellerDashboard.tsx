@@ -1,8 +1,7 @@
-
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
+ */
 
 import React from 'react';
 
@@ -16,7 +15,7 @@ const ResellerDashboard: React.FC<ResellerProps> = ({ currency }) => {
     if (!localStorage.getItem('ss_reseller_id')) {
       localStorage.setItem('ss_reseller_id', resellerId);
     }
-    
+
     const link = `https://shopsmart.app/join?ref=${resellerId}`;
     navigator.clipboard.writeText(link).then(() => {
         alert("Referral link copied! " + link);
@@ -27,51 +26,51 @@ const ResellerDashboard: React.FC<ResellerProps> = ({ currency }) => {
   };
 
   return (
-    <div className="pt-32 pb-24 px-6 max-w-[1200px] mx-auto animate-fade-in">
-      <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-8 text-center md:text-left">
+    <div className="pt-8 pb-6 px-3 mx-auto" style={{maxWidth: '1200px', animation: 'fadeIn 0.6s ease-out'}}>
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-5 gap-4 text-center text-md-start">
         <div>
-            <span className="clay-text-convex text-[10px] font-black text-[#6A4FBF] uppercase tracking-widest mb-3">Community Hub</span>
-            <h1 className="text-5xl font-black text-[#4A4A4A]">Partner Center</h1>
+            <span className="clay-text-convex fs-6 fw-bolder text-uppercase mb-2" style={{letterSpacing: '0.25em', color: '#6A4FBF'}}>Community Hub</span>
+            <h1 className="fs-1 fw-bolder" style={{color: '#4A4A4A'}}>Partner Center</h1>
         </div>
-        <div className="flex gap-4">
-            <button onClick={handleCopyLink} className="px-10 py-5 clay-button-primary text-white font-black uppercase tracking-widest text-xs rounded-full shadow-2xl hover:scale-105 active:scale-95 transition-all">Copy Invite Link</button>
-            <button className="px-10 py-5 bg-white text-[#6A4FBF] font-black uppercase tracking-widest text-xs rounded-full shadow-lg hover:shadow-xl transition-all">Payout Config</button>
+        <div className="d-flex gap-3">
+            <button onClick={handleCopyLink} className="px-5 py-3 clay-button-primary text-white fw-bolder text-uppercase fs-6 rounded-pill shadow hover:scale-105 active:scale-95 transition-all" style={{letterSpacing: '0.25em'}} onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseLeave={(e) => e.currentTarget.style.transform = ''} onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.95)'} onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1.05)'}>Copy Invite Link</button>
+            <button className="px-5 py-3 bg-white fw-bolder text-uppercase fs-6 rounded-pill shadow hover:shadow transition-all" style={{color: '#6A4FBF', letterSpacing: '0.25em'}} onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'} onMouseLeave={(e) => e.currentTarget.style.boxShadow = ''}>Payout Config</button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-16">
-          <div className="clay-card p-12 bg-[#6A4FBF] text-white shadow-2xl scale-105">
-              <span className="text-[11px] font-black uppercase tracking-[0.25em] text-white/50 mb-3 block">Total Commissions</span>
-              <div className="text-6xl font-black tracking-tighter">{currency}1,245.00</div>
-              <div className="mt-6 flex items-center gap-3">
-                  <span className="bg-white/20 px-3 py-1.5 rounded-2xl text-[10px] font-black">Diamond Status</span>
+      <div className="row g-5 mb-5">
+          <div className="col-12 col-md-4 clay-card p-5 text-white shadow" style={{backgroundColor: '#6A4FBF', transform: 'scale(1.05)'}}>
+              <span className="fs-6 fw-bolder text-uppercase d-block mb-2 opacity-50" style={{letterSpacing: '0.25em'}}>Total Commissions</span>
+              <div className="fs-1 fw-bolder" style={{letterSpacing: '-0.05em'}}>{currency}1,245.00</div>
+              <div className="mt-3 d-flex align-items-center gap-3">
+                  <span className="bg-white px-3 py-1 rounded-3 fs-6 fw-bolder opacity-20">Diamond Status</span>
               </div>
           </div>
-          <div className="clay-card p-12 bg-white shadow-xl">
-              <span className="text-[11px] font-black uppercase tracking-[0.25em] text-gray-300 mb-3 block">Active Referrals</span>
-              <div className="text-6xl font-black text-[#4A4A4A] tracking-tighter">18</div>
-              <div className="mt-6 text-[11px] font-black text-[#2AB9A9] uppercase tracking-widest flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-[#2AB9A9] animate-pulse"></span>
+          <div className="col-12 col-md-4 clay-card p-5 bg-white shadow">
+              <span className="fs-6 fw-bolder text-uppercase text-light d-block mb-2" style={{letterSpacing: '0.25em'}}>Active Referrals</span>
+              <div className="fs-1 fw-bolder" style={{color: '#4A4A4A', letterSpacing: '-0.05em'}}>18</div>
+              <div className="mt-3 fs-6 fw-bolder text-uppercase d-flex align-items-center gap-2" style={{color: '#2AB9A9', letterSpacing: '0.25em'}}>
+                <span className="rounded-circle animate-pulse" style={{width: '8px', height: '8px', backgroundColor: '#2AB9A9'}}></span>
                 Onboarded Shops
               </div>
           </div>
-          <div className="clay-card p-12 bg-[#FFB673] text-white shadow-xl">
-              <span className="text-[11px] font-black uppercase tracking-[0.25em] text-white/50 mb-3 block">Earn Rate</span>
-              <div className="text-6xl font-black tracking-tighter">20%</div>
-              <div className="mt-6 text-[11px] font-black text-white/60 uppercase tracking-widest">Growth Tier</div>
+          <div className="col-12 col-md-4 clay-card p-5 text-white shadow" style={{backgroundColor: '#FFB673'}}>
+              <span className="fs-6 fw-bolder text-uppercase d-block mb-2 opacity-50" style={{letterSpacing: '0.25em'}}>Earn Rate</span>
+              <div className="fs-1 fw-bolder" style={{letterSpacing: '-0.05em'}}>20%</div>
+              <div className="mt-3 fs-6 fw-bolder text-uppercase opacity-60" style={{letterSpacing: '0.25em'}}>Growth Tier</div>
           </div>
       </div>
 
-      <div className="clay-card p-12 bg-white/90 border-4 border-white shadow-2xl overflow-hidden">
-          <h3 className="text-3xl font-black mb-12 text-[#4A4A4A]">Merchant Network</h3>
-          <div className="overflow-x-auto no-scrollbar">
-              <table className="w-full text-left min-w-[800px]">
+      <div className="clay-card p-5 border border-4 shadow overflow-hidden" style={{backgroundColor: 'rgba(255,255,255,0.9)'}}>
+          <h3 className="fs-2 fw-bolder mb-5" style={{color: '#4A4A4A'}}>Merchant Network</h3>
+          <div className="overflow-x-auto">
+              <table className="w-100 text-start" style={{minWidth: '800px'}}>
                   <thead>
-                      <tr className="text-[11px] font-black uppercase text-gray-400 tracking-[0.25em] border-b-4 border-gray-50">
-                          <th className="pb-8 px-6">Merchant Shop</th>
-                          <th className="pb-8 px-6">Joined Date</th>
-                          <th className="pb-8 px-6">Plan Status</th>
-                          <th className="pb-8 px-6 text-right">My Share (Total)</th>
+                      <tr className="fs-6 fw-bolder text-uppercase text-secondary border-bottom border-4" style={{letterSpacing: '0.25em'}}>
+                          <th className="pb-4 px-3">Merchant Shop</th>
+                          <th className="pb-4 px-3">Joined Date</th>
+                          <th className="pb-4 px-3">Plan Status</th>
+                          <th className="pb-4 px-3 text-end">My Share (Total)</th>
                       </tr>
                   </thead>
                   <tbody>
@@ -81,26 +80,23 @@ const ResellerDashboard: React.FC<ResellerProps> = ({ currency }) => {
                           { name: "Bridge Meds", type: "Pharmacy", date: "2024-12-15", status: "Expired", earned: 450.00, icon: "💊" },
                           { name: "Fresh Produce", type: "Vendor", date: "2025-02-10", status: "Trial", earned: 0.00, icon: "🍎" },
                       ].map((m, i) => (
-                          <tr key={i} className="border-b-2 border-gray-50 group hover:bg-[#F8E9DD]/20 transition-all cursor-pointer">
-                              <td className="py-8 px-6">
-                                <div className="flex items-center gap-5">
-                                    <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-xl">{m.icon}</div>
+                          <tr key={i} className="border-bottom border-2 group cursor-pointer transition-all" style={{borderColor: '#f8f9fa'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(248, 233, 221, 0.2)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = ''}>
+                              <td className="py-4 px-3">
+                                <div className="d-flex align-items-center gap-3">
+                                    <div className="rounded-3 bg-white shadow-sm d-flex align-items-center justify-content-center fs-4" style={{width: '48px', height: '48px'}}>{m.icon}</div>
                                     <div>
-                                        <div className="font-black text-xl text-[#4A4A4A] group-hover:text-[#6A4FBF] transition-colors">{m.name}</div>
-                                        <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{m.type}</div>
+                                        <div className="fw-bolder fs-4 transition-colors" style={{color: '#4A4A4A'}} onMouseEnter={(e) => e.currentTarget.style.color = '#6A4FBF'} onMouseLeave={(e) => e.currentTarget.style.color = '#4A4A4A'}>{m.name}</div>
+                                        <div className="fs-6 fw-bold text-secondary text-uppercase" style={{letterSpacing: '0.25em'}}>{m.type}</div>
                                     </div>
                                 </div>
                               </td>
-                              <td className="py-8 px-6 font-bold text-gray-600 text-sm">{m.date}</td>
-                              <td className="py-8 px-6">
-                                  <span className={`px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest ${
-                                      m.status === 'Active' ? 'bg-green-100 text-green-600' : 
-                                      m.status === 'Trial' ? 'bg-blue-100 text-blue-600' : 'bg-red-50 text-red-400'
-                                  }`}>
+                              <td className="py-4 px-3 fw-bold text-muted fs-6">{m.date}</td>
+                              <td className="py-4 px-3">
+                                  <span className={`px-3 py-2 rounded-pill fs-6 fw-bolder text-uppercase ${m.status === 'Active' ? 'bg-success-subtle text-success' : m.status === 'Trial' ? 'bg-primary-subtle text-primary' : 'bg-danger-subtle text-danger'}`} style={{letterSpacing: '0.25em'}}>
                                       {m.status}
                                   </span>
                               </td>
-                              <td className="py-8 px-6 font-black text-2xl text-right tracking-tight">{currency}{m.earned.toFixed(2)}</td>
+                              <td className="py-4 px-3 fw-bolder fs-3 text-end" style={{letterSpacing: '-0.025em'}}>{currency}{m.earned.toFixed(2)}</td>
                           </tr>
                       ))}
                   </tbody>

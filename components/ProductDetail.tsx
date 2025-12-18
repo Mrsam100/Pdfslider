@@ -1,7 +1,7 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
+ */
 
 import React, { useMemo } from 'react';
 import { Paper } from '../types';
@@ -36,7 +36,7 @@ const TextWithTooltips: React.FC<{ text: string }> = ({ text }) => {
       
       if (matchedKey) {
         return (
-          <span key={index} className="tooltip-trigger inline-block">
+          <span key={index} className="tooltip-trigger d-inline-block">
             {part}
             <span className="tooltip-content">
               {GLOSSARY[matchedKey]}
@@ -62,21 +62,24 @@ const ProductDetail: React.FC<ProductDetailProps> = ({
   const publisherInfo = getPublisherInfo(product.publisher);
 
   return (
-    <div className="min-h-screen pt-12 pb-24 px-6 animate-fade-in-up relative overflow-hidden">
+    <div className="min-vh-100 pt-5 pb-5 px-4 position-relative overflow-hidden" style={{paddingBottom: '6rem', animation: 'fadeInUp 0.6s ease-out'}}>
       
       {/* 3D Decorative Floating Coins/Shapes */}
-      <div className="absolute top-20 right-[-5%] w-64 h-64 rounded-full bg-gradient-to-br from-[#FFB673] to-[#FFD447] opacity-10 blur-3xl animate-float-delayed pointer-events-none"></div>
-      <div className="absolute bottom-40 left-[-5%] w-80 h-80 rounded-full bg-gradient-to-tr from-[#6A4FBF] to-[#2AB9A9] opacity-10 blur-3xl animate-float pointer-events-none"></div>
+      <div className="position-absolute opacity-10 pointer-events-none" style={{top: '5rem', right: '-5%', width: '16rem', height: '16rem', borderRadius: '50%', background: 'linear-gradient(to bottom right, #FFB673, #FFD447)', filter: 'blur(64px)', animation: 'float 6s ease-in-out infinite'}}></div>
+      <div className="position-absolute opacity-10 pointer-events-none" style={{bottom: '10rem', left: '-5%', width: '20rem', height: '20rem', borderRadius: '50%', background: 'linear-gradient(to top right, #6A4FBF, #2AB9A9)', filter: 'blur(64px)', animation: 'float 6s ease-in-out infinite 2s'}}></div>
 
-      <div className="max-w-[1000px] mx-auto relative z-10">
+      <div className="mx-auto position-relative" style={{maxWidth: '1000px', zIndex: 10}}>
         
         {/* Navigation */}
         <button 
             onClick={onBack}
-            className="flex items-center gap-2 font-bold text-gray-500 hover:text-[#6A4FBF] transition-colors mb-8 group"
+            className="d-flex align-items-center gap-2 fw-bold text-muted mb-4"
+            style={{transition: 'color 0.2s'}}
+            onMouseEnter={(e) => e.currentTarget.style.color = '#6A4FBF'}
+            onMouseLeave={(e) => e.currentTarget.style.color = ''}
         >
-            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:shadow-md transition-all">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+            <div className="rounded-circle bg-white d-flex align-items-center justify-content-center shadow-sm" style={{width: '2rem', height: '2rem', transition: 'box-shadow 0.2s'}}>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{width: '1rem', height: '1rem'}}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                 </svg>
             </div>
@@ -84,27 +87,29 @@ const ProductDetail: React.FC<ProductDetailProps> = ({
         </button>
 
         {/* Main Content Card */}
-        <div className="clay-card p-8 md:p-12 relative overflow-hidden bg-white/80 backdrop-blur-md">
+        <div className="clay-card p-4 p-md-5 position-relative overflow-hidden" style={{background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(16px)'}}>
             {/* Header */}
-            <div className="flex flex-col md:flex-row gap-8 items-start mb-12">
-                <div className="w-24 h-24 rounded-[30px] flex items-center justify-center text-white text-4xl font-bold shadow-[10px_10px_20px_#d1d5db,-10px_-10px_20px_#ffffff] shrink-0" style={{ backgroundColor: publisherInfo.color }}>
+            <div className="d-flex flex-column flex-md-row gap-4 align-items-start mb-5">
+                <div className="d-flex align-items-center justify-content-center text-white fs-1 fw-bold flex-shrink-0" style={{width: '6rem', height: '6rem', borderRadius: '30px', backgroundColor: publisherInfo.color, boxShadow: '10px 10px 20px #d1d5db, -10px -10px 20px #ffffff'}}>
                     {publisherInfo.logo}
                 </div>
-                <div className="flex-1">
-                    <div className="flex justify-between items-start">
+                <div className="flex-fill">
+                    <div className="d-flex justify-content-between align-items-start">
                         <div>
-                             <h1 className="text-4xl md:text-5xl font-extrabold text-[#4A4A4A] mb-2">{product.title}</h1>
-                             <div className="flex gap-3 text-sm font-semibold text-gray-500">
-                                 <span className="clay-tag px-3 py-1 rounded-lg">{product.publisher}</span>
-                                 <span className="clay-tag px-3 py-1 rounded-lg">Ages {product.publicationDate}</span>
-                                 <span className="bg-[#e6fffa] text-[#2AB9A9] px-3 py-1 rounded-lg shadow-sm">Verified Curriculum</span>
+                             <h1 className="fs-1 fs-md-2 fw-bolder mb-2" style={{color: '#4A4A4A'}}>{product.title}</h1>
+                             <div className="d-flex gap-3 fs-6 fw-semibold text-muted">
+                                 <span className="clay-tag px-2 py-1 rounded-3">{product.publisher}</span>
+                                 <span className="clay-tag px-2 py-1 rounded-3">Ages {product.publicationDate}</span>
+                                 <span className="px-2 py-1 rounded-3 shadow-sm" style={{backgroundColor: '#e6fffa', color: '#2AB9A9'}}>Verified Curriculum</span>
                              </div>
                         </div>
                         <button 
                             onClick={() => onToggleSave(product)}
-                            className={`w-14 h-14 rounded-full flex items-center justify-center transition-all shadow-[6px_6px_12px_#d1d5db,-6px_-6px_12px_#ffffff] active:shadow-[inset_4px_4px_8px_#d1d5db,inset_-4px_-4px_8px_#ffffff] ${isSaved ? 'bg-[#FFD447] text-white animate-pop' : 'bg-[#F8E9DD] text-gray-400 hover:text-[#6A4FBF]'}`}
+                            className="d-flex align-items-center justify-content-center rounded-circle" style={{width: '3.5rem', height: '3.5rem', transition: 'all 0.2s', boxShadow: '6px 6px 12px #d1d5db, -6px -6px 12px #ffffff', backgroundColor: isSaved ? '#FFD447' : '#F8E9DD', color: isSaved ? 'white' : '', animation: isSaved ? 'pop 0.3s' : ''}}
+                            onMouseEnter={(e) => !isSaved && (e.currentTarget.style.color = '#6A4FBF')}
+                            onMouseLeave={(e) => !isSaved && (e.currentTarget.style.color = '')}
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill={isSaved ? "currentColor" : "none"} viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill={isSaved ? "currentColor" : "none"} viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{width: '1.5rem', height: '1.5rem'}}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
                             </svg>
                         </button>
@@ -113,26 +118,32 @@ const ProductDetail: React.FC<ProductDetailProps> = ({
             </div>
 
             {/* Price Block -> Learning Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                <div className="bg-[#F8E9DD] rounded-2xl p-6 shadow-inner">
-                    <span className="block text-sm font-bold text-gray-500 mb-1">Difficulty</span>
-                    <span className="clay-text-convex">
-                       <span className="block text-3xl font-extrabold text-[#4A4A4A]">{product.readTime}</span>
-                    </span>
+            <div className="row g-3 mb-5">
+                <div className="col-12 col-md-4">
+                    <div className="rounded-3 p-3 shadow-sm" style={{backgroundColor: '#F8E9DD'}}>
+                        <span className="d-block fs-6 fw-bold text-muted mb-1">Difficulty</span>
+                        <span className="clay-text-convex">
+                           <span className="d-block fs-2 fw-bolder" style={{color: '#4A4A4A'}}>{product.readTime}</span>
+                        </span>
+                    </div>
                 </div>
-                <div className="bg-[#e6fffa] rounded-2xl p-6 shadow-inner border border-[#2AB9A9]/10">
-                    <span className="block text-sm font-bold text-[#2AB9A9] mb-1">XP Reward</span>
-                    <span className="block text-3xl font-extrabold text-[#2AB9A9]">+{product.upvotes} XP</span>
+                <div className="col-12 col-md-4">
+                    <div className="rounded-3 p-3 shadow-sm" style={{backgroundColor: '#e6fffa', border: '1px solid rgba(42, 185, 169, 0.1)'}}>
+                        <span className="d-block fs-6 fw-bold mb-1" style={{color: '#2AB9A9'}}>XP Reward</span>
+                        <span className="d-block fs-2 fw-bolder" style={{color: '#2AB9A9'}}>+{product.upvotes} XP</span>
+                    </div>
                 </div>
-                <div className="bg-[#f3e8ff] rounded-2xl p-6 shadow-inner border border-[#6A4FBF]/10">
-                    <span className="block text-sm font-bold text-[#6A4FBF] mb-1">Est. Time</span>
-                    <span className="block text-3xl font-extrabold text-[#6A4FBF]">20 Mins</span>
+                <div className="col-12 col-md-4">
+                    <div className="rounded-3 p-3 shadow-sm" style={{backgroundColor: '#f3e8ff', border: '1px solid rgba(106, 79, 191, 0.1)'}}>
+                        <span className="d-block fs-6 fw-bold mb-1" style={{color: '#6A4FBF'}}>Est. Time</span>
+                        <span className="d-block fs-2 fw-bolder" style={{color: '#6A4FBF'}}>20 Mins</span>
+                    </div>
                 </div>
             </div>
 
             {/* Description with Tooltips */}
-            <div className="prose prose-lg max-w-none text-gray-600 leading-relaxed font-medium mb-12">
-                <h3 className="text-[#4A4A4A] font-bold text-2xl mb-4">About This Module</h3>
+            <div className="text-muted fw-medium mb-5" style={{maxWidth: 'none', lineHeight: 1.625}}>
+                <h3 className="fw-bold fs-3 mb-3" style={{color: '#4A4A4A'}}>About This Module</h3>
                 <TextWithTooltips text={product.abstract} />
                 <br/>
                 <TextWithTooltips text={product.description || ""} />
@@ -140,13 +151,15 @@ const ProductDetail: React.FC<ProductDetailProps> = ({
 
             {/* Insights */}
             {product.aiInsights && (
-                <div className="mb-12">
-                    <h3 className="text-[#4A4A4A] font-bold text-xl mb-6">Learning Outcomes</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="mb-5">
+                    <h3 className="fw-bold fs-4 mb-3" style={{color: '#4A4A4A'}}>Learning Outcomes</h3>
+                    <div className="row g-3">
                         {product.aiInsights.map((insight, idx) => (
-                            <div key={idx} className="flex items-start gap-3 p-4 bg-white rounded-xl border border-gray-100 shadow-[4px_4px_10px_rgba(0,0,0,0.05)] hover:shadow-md transition-shadow">
-                                <div className="w-2 h-2 rounded-full bg-[#FFB673] mt-2 shrink-0 shadow-[0_0_5px_#FFB673]"></div>
-                                <span className="text-sm font-semibold text-gray-600">{insight}</span>
+                            <div key={idx} className="col-12 col-md-6">
+                                <div className="d-flex align-items-start gap-3 p-3 bg-white rounded-3 border shadow-sm" style={{transition: 'box-shadow 0.2s'}} onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)'} onMouseLeave={(e) => e.currentTarget.style.boxShadow = ''}>
+                                    <div className="rounded-circle flex-shrink-0 mt-2" style={{width: '0.5rem', height: '0.5rem', backgroundColor: '#FFB673', boxShadow: '0 0 5px #FFB673'}}></div>
+                                    <span className="fs-6 fw-semibold text-muted">{insight}</span>
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -154,19 +167,19 @@ const ProductDetail: React.FC<ProductDetailProps> = ({
             )}
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4">
-                 <button className="clay-button w-full py-4 font-bold text-lg bg-[#F8E9DD] text-[#4A4A4A]">Start Lesson</button>
-                 <button className="w-full py-4 font-bold text-lg rounded-full bg-white border border-gray-200 text-[#4A4A4A] hover:bg-gray-50 shadow-sm hover:shadow-md transition-all">Download Teacher Guide</button>
+            <div className="d-flex flex-column flex-sm-row gap-3">
+                 <button className="clay-button w-100 py-3 fw-bold fs-5" style={{backgroundColor: '#F8E9DD', color: '#4A4A4A'}}>Start Lesson</button>
+                 <button className="w-100 py-3 fw-bold fs-5 rounded-pill bg-white border text-muted shadow-sm" style={{transition: 'all 0.2s'}} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f8f9fa'; e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)'; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'white'; e.currentTarget.style.boxShadow = ''; }}>Download Teacher Guide</button>
             </div>
         </div>
 
         {/* Related Assets Section */}
         {relatedPapers.length > 0 && (
-            <div className="mt-20">
-                <h3 className="text-2xl font-extrabold text-[#4A4A4A] mb-8 px-2">Related Modules</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div style={{marginTop: '5rem'}}>
+                <h3 className="fs-3 fw-bolder mb-4 px-2" style={{color: '#4A4A4A'}}>Related Modules</h3>
+                <div className="row g-4">
                     {relatedPapers.map(paper => (
-                        <div key={paper.id} className="h-full">
+                        <div key={paper.id} className="col-12 col-md-6 col-lg-4 h-100">
                             <ProductCard 
                                 product={paper} 
                                 onClick={onProductClick}

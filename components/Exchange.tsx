@@ -1,30 +1,32 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
+ */
 
 import React from 'react';
 
 const Exchange: React.FC = () => {
   return (
-    <div className="py-24 px-6 bg-white border-t border-gray-100">
-      <div className="max-w-[1200px] mx-auto">
-          <div className="text-center mb-16">
-              <span className="text-xs font-bold uppercase tracking-widest text-[#6366F1] mb-2 block">The Pipeline</span>
-              <h2 className="text-3xl md:text-4xl font-bold text-[#111827]">Intelligent Reconstruction</h2>
+    <div className="py-6 px-4 bg-white border-top">
+      <div className="mx-auto" style={{maxWidth: '1200px'}}>
+          <div className="text-center mb-5">
+              <span className="fs-6 fw-bold text-uppercase d-block mb-2" style={{letterSpacing: '0.25em', color: '#6366F1'}}>The Pipeline</span>
+              <h2 className="fs-2 fs-md-1 fw-bold" style={{color: '#111827'}}>Intelligent Reconstruction</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="row g-4">
               {[
                   { n: "01", t: "Ingest", d: "Deep XML parsing of source PDF/DOCX structure." },
                   { n: "02", t: "Deconstruct", d: "Identification of headers, figures, and key text blocks." },
                   { n: "03", t: "Synthesize", d: "Gemini 2.5 Pro generates strategic slide narratives." },
                   { n: "04", t: "Render", d: "Vector-perfect export to native PowerPoint formats." }
               ].map(step => (
-                  <div key={step.n} className="clay-card p-8 bg-white/50 border border-gray-100 hover:border-[#6366F1]/20 transition-colors">
-                      <div className="text-4xl font-black text-gray-100 mb-4">{step.n}</div>
-                      <h3 className="font-bold text-lg text-[#111827] mb-2">{step.t}</h3>
-                      <p className="text-sm text-gray-500 leading-relaxed font-medium">{step.d}</p>
+                  <div key={step.n} className="col-12 col-md-3">
+                      <div className="clay-card p-4 border" style={{backgroundColor: 'rgba(255,255,255,0.5)', transition: 'border-color 0.2s'}} onMouseEnter={(e) => e.currentTarget.style.borderColor = 'rgba(99, 102, 241, 0.2)'} onMouseLeave={(e) => e.currentTarget.style.borderColor = ''}>
+                          <div className="fs-1 fw-bolder text-light mb-3">{step.n}</div>
+                          <h3 className="fw-bold fs-5 mb-2" style={{color: '#111827'}}>{step.t}</h3>
+                          <p className="fs-6 text-muted fw-medium" style={{lineHeight: 1.625}}>{step.d}</p>
+                      </div>
                   </div>
               ))}
           </div>

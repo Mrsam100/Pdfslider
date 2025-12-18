@@ -15,35 +15,42 @@ interface ActivityHistoryProps {
 // Repurposed component to show news discovery and processing logs
 export default function Customers({ customers, sales }: ActivityHistoryProps) {
   return (
-    <div className="pt-32 pb-24 px-6 max-w-[1200px] mx-auto animate-fade-in-up">
-      <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-8 text-center md:text-left">
+    <div className="py-5 px-3 mx-auto animate-fade-in-up" style={{ paddingTop: '8rem', maxWidth: '1200px' }}>
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-5 gap-4 text-center text-md-start">
         <div>
-            <span className="clay-text-convex text-[10px] font-black text-[#2AB9A9] uppercase tracking-widest mb-3">Engagement Stream</span>
-            <h1 className="text-5xl font-black text-[#4A4A4A]">Activity Logs</h1>
+            <span className="clay-text-convex fw-black text-uppercase d-block mb-2" style={{ fontSize: '0.625rem', color: '#2AB9A9', letterSpacing: '0.1em' }}>Engagement Stream</span>
+            <h1 className="display-4 fw-black text-dark">Activity Logs</h1>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-          <div className="lg:col-span-2 space-y-6">
-              <h3 className="text-xl font-black text-[#4A4A4A] mb-8">Recent News Events</h3>
+      <div className="row g-4">
+          <div className="col-12 col-lg-8">
+              <h3 className="h5 fw-black text-dark mb-4">Recent News Events</h3>
               {sales.length === 0 ? (
-                  <div className="clay-card p-20 text-center opacity-30 font-black italic text-gray-400">Waiting for news triggers...</div>
+                  <div className="clay-card p-5 text-center fw-black fst-italic text-secondary" style={{ opacity: 0.3 }}>Waiting for news triggers...</div>
               ) : (
                 sales.map(log => (
-                    <div key={log.id} className="clay-card p-6 bg-white flex items-center justify-between border-2 border-white hover:border-[#2AB9A9]/30 transition-all shadow-lg">
-                        <div className="flex items-center gap-5">
-                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white font-black text-xs bg-[#6A4FBF] shadow-md`}>
+                    <div key={log.id} className="clay-card p-4 bg-white d-flex align-items-center justify-content-between border border-2 border-white shadow mb-3"
+                         style={{ transition: 'border-color 0.3s' }}
+                         onMouseEnter={(e) => e.currentTarget.style.borderColor = 'rgba(42, 185, 169, 0.3)'}
+                         onMouseLeave={(e) => e.currentTarget.style.borderColor = 'white'}>
+                        <div className="d-flex align-items-center gap-3">
+                            <div className="rounded-3 d-flex align-items-center justify-content-center text-white fw-black shadow"
+                                 style={{ width: '3rem', height: '3rem', backgroundColor: '#6A4FBF', fontSize: '0.75rem' }}>
                                 📡
                             </div>
                             <div>
-                                <div className="font-black text-[#4A4A4A] text-sm md:text-base">
+                                <div className="fw-black text-dark" style={{ fontSize: '0.875rem' }}>
                                     {log.status === 'summarized' ? 'Neural Synthesis' : 'Feed Sync'} on "{log.articleTitle}"
                                 </div>
-                                <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{new Date(log.timestamp).toLocaleTimeString()} • Signal Identified</div>
+                                <div className="fw-bold text-secondary text-uppercase" style={{ fontSize: '0.625rem', letterSpacing: '0.1em' }}>
+                                  {new Date(log.timestamp).toLocaleTimeString()} • Signal Identified
+                                </div>
                             </div>
                         </div>
-                        <div className="flex flex-col items-end">
-                            <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${log.status === 'summarized' ? 'bg-green-100 text-green-600' : 'bg-blue-100 text-blue-600'}`}>
+                        <div className="d-flex flex-column align-items-end">
+                            <span className={`px-3 py-1 rounded-pill fw-black text-uppercase ${log.status === 'summarized' ? 'bg-success bg-opacity-10 text-success' : 'bg-info bg-opacity-10 text-info'}`}
+                                  style={{ fontSize: '0.625rem', letterSpacing: '0.1em' }}>
                                 {log.status === 'summarized' ? 'Signal Confirmed' : 'Processing'}
                             </span>
                         </div>
@@ -52,20 +59,20 @@ export default function Customers({ customers, sales }: ActivityHistoryProps) {
               )}
           </div>
 
-          <div className="space-y-8">
-              <div className="clay-card p-10 bg-[#FFB673] text-white shadow-2xl">
-                  <h4 className="text-xl font-black mb-4">Focus Tip</h4>
-                  <p className="text-white/80 text-sm font-bold leading-relaxed italic">
+          <div className="col-12 col-lg-4">
+              <div className="clay-card p-5 text-white shadow mb-4" style={{ backgroundColor: '#FFB673' }}>
+                  <h4 className="h5 fw-black mb-3">Focus Tip</h4>
+                  <p className="small fw-bold fst-italic lh-base" style={{ color: 'rgba(255,255,255,0.8)' }}>
                     "Larry: Dedication to the core mission means saying no to a thousand things. Our engine deduplicates the noise so you can focus on the signal."
                   </p>
               </div>
-              <div className="clay-card p-10 bg-white border-4 border-white shadow-xl">
-                  <h4 className="text-xl font-black text-[#4A4A4A] mb-6">Engine Health</h4>
-                  <div className="space-y-4">
+              <div className="clay-card p-5 bg-white border border-4 border-white shadow">
+                  <h4 className="h5 fw-black text-dark mb-4">Engine Health</h4>
+                  <div className="d-flex flex-column gap-3">
                       {['RSS Fetch Engine', 'Neural Deduplicator', 'Summary Generator', 'Sentiment Analyzer'].map(p => (
-                          <div key={p} className="flex items-center justify-between">
-                              <span className="text-sm font-bold text-gray-500">{p}</span>
-                              <div className="w-3 h-3 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
+                          <div key={p} className="d-flex align-items-center justify-content-between">
+                              <span className="small fw-bold text-secondary">{p}</span>
+                              <div className="rounded-circle bg-success" style={{ width: '0.75rem', height: '0.75rem', boxShadow: '0 0 8px rgba(34,197,94,0.6)' }}></div>
                           </div>
                       ))}
                   </div>
