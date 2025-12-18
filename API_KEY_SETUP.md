@@ -17,8 +17,10 @@ Your NVIDIA AI LLM API key has been successfully configured!
 **Location:** `Pdfslider/.env`
 
 ```env
-API_KEY=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
+API_KEY=your_api_key_here
 ```
+
+> Replace `your_api_key_here` with your actual API key from https://build.nvidia.com/ or https://ai.google.dev/
 
 ### How It Works
 

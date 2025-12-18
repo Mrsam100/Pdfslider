@@ -1,10 +1,19 @@
 /**
  * Global Styles and Animations
- * Optimized for performance and user experience
+ * Whisper Distilled Theme - Minimalist Black & White
  */
 
 /* Import Bootstrap CSS */
 @import 'bootstrap/dist/css/bootstrap.min.css';
+
+/* Whisper Distilled Theme Colors */
+:root {
+  --whisper-black: #000000;
+  --whisper-white: #ffffff;
+  --whisper-gray: #666666;
+  --whisper-light-gray: #f5f5f5;
+  --whisper-border: #333333;
+}
 
 /* Custom animations for smooth UX */
 @keyframes fade-in {
@@ -109,13 +118,20 @@
 
 /* Focus visible for accessibility */
 *:focus-visible {
-  outline: 2px solid #4F46E5;
+  outline: 2px solid var(--whisper-black);
   outline-offset: 2px;
 }
 
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
+}
+
+/* Base body styles */
+body {
+  background-color: var(--whisper-white);
+  color: var(--whisper-black);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
 }
 
 /* Custom scrollbar */
@@ -125,16 +141,16 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--whisper-white);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #888;
+  background: var(--whisper-gray);
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: var(--whisper-black);
 }
 
 /* Loading spinner */
@@ -146,19 +162,18 @@ html {
 
 .spinner {
   border: 3px solid rgba(0, 0, 0, 0.1);
-  border-left-color: #0F172A;
+  border-left-color: var(--whisper-black);
   border-radius: 50%;
   width: 40px;
   height: 40px;
   animation: spin 1s linear infinite;
 }
 
-/* Gradient text */
+/* Gradient text - Whisper theme uses black */
 .gradient-text {
-  background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--whisper-black);
+  font-weight: 900;
+  letter-spacing: -0.02em;
 }
 
 /* Glass morphism effect */
@@ -181,13 +196,54 @@ html {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-/* Button hover effects */
+/* Button hover effects - Whisper Theme */
 button {
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.8;
+  transform: translateY(-1px);
 }
 
 button:active {
-  transform: scale(0.98);
+  transform: scale(0.98) translateY(0);
+}
+
+/* Whisper button styles */
+.btn-whisper-primary {
+  background-color: transparent;
+  border: 2px solid var(--whisper-black);
+  color: var(--whisper-black);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.75rem 2rem;
+  transition: all 0.3s ease;
+}
+
+.btn-whisper-primary:hover {
+  background-color: var(--whisper-black);
+  color: var(--whisper-white);
+  transform: translateY(-2px);
+}
+
+.btn-whisper-secondary {
+  background-color: var(--whisper-black);
+  color: var(--whisper-white);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.75rem 2rem;
+  border: 2px solid var(--whisper-black);
+  transition: all 0.3s ease;
+}
+
+.btn-whisper-secondary:hover {
+  background-color: transparent;
+  color: var(--whisper-black);
+  transform: translateY(-2px);
 }
 
 /* Disable animations for users who prefer reduced motion */
@@ -214,6 +270,52 @@ button:active {
   * {
     border-width: 2px;
   }
+}
+
+/* Links and interactive elements */
+a {
+  transition: all 0.2s ease;
+}
+
+a:hover {
+  opacity: 0.7;
+  text-decoration: underline !important;
+}
+
+/* Input focus states */
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 2px solid var(--whisper-black);
+  outline-offset: 2px;
+  border-color: var(--whisper-black);
+}
+
+/* Whisper-specific animations */
+@keyframes whisper-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.whisper-fade-in {
+  animation: whisper-fade-in 0.6s ease-out;
+}
+
+/* Improved text selection */
+::selection {
+  background-color: var(--whisper-black);
+  color: var(--whisper-white);
+}
+
+::-moz-selection {
+  background-color: var(--whisper-black);
+  color: var(--whisper-white);
 }
 
 /* Dark mode support (for future implementation) */

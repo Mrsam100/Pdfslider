@@ -33,20 +33,20 @@ const Navbar: React.FC<NavbarProps> = ({ onNavClick, activeView, shopName, isLog
   return (
     <>
       <div className="position-fixed top-0 start-0 w-100" style={{ zIndex: 150, padding: '1rem' }}>
-        <nav className="navbar navbar-expand-lg navbar-light bg-white bg-opacity-90 border border-light shadow-sm rounded-pill mx-auto"
-             style={{ maxWidth: '1400px', backdropFilter: 'blur(20px)', zIndex: 160 }}>
+        <nav className="navbar navbar-expand-lg navbar-light border-bottom mx-auto"
+             style={{ maxWidth: '1400px', zIndex: 160, borderColor: '#e0e0e0 !important', backgroundColor: 'transparent' }}>
           <div className="container-fluid px-3 px-md-4">
 
             {/* Logo Section */}
             <div className="navbar-brand d-flex align-items-center gap-2 cursor-pointer"
                  onClick={() => handleMobileNav('landing')}
                  style={{ cursor: 'pointer' }}>
-              <div className="d-flex align-items-center justify-content-center bg-dark text-white fw-bold rounded-3 shadow"
+              <div className="d-flex align-items-center justify-content-center bg-dark text-white fw-black"
                    style={{ width: '40px', height: '40px', fontSize: '1.125rem' }}>
                 P
               </div>
-              <span className="fw-bold fs-5 text-dark">
-                {BRAND_NAME}
+              <span className="fw-bold fs-5 text-dark" style={{ letterSpacing: '0.1em' }}>
+                PDFSLIDER
               </span>
             </div>
 
@@ -69,17 +69,25 @@ const Navbar: React.FC<NavbarProps> = ({ onNavClick, activeView, shopName, isLog
 
             {/* Desktop Nav */}
             <div className="collapse navbar-collapse justify-content-center">
-              <div className="d-flex align-items-center gap-2 bg-light bg-opacity-50 p-2 rounded-pill border border-light">
+              <div className="d-flex align-items-center gap-3">
                 {navItems.map((item) => (
                   <button
                     key={item.id}
                     onClick={() => onNavClick(item.id)}
-                    className={`btn btn-sm rounded-pill fw-semibold ${
+                    className={`btn btn-sm fw-bold text-uppercase ${
                       activeView === item.id
-                        ? 'btn-light text-dark shadow-sm'
-                        : 'btn-link text-secondary text-decoration-none'
+                        ? 'text-dark border-bottom border-2 border-dark'
+                        : 'text-dark'
                     }`}
-                    style={{ fontSize: '0.75rem', padding: '0.5rem 1.25rem' }}
+                    style={{
+                      fontSize: '0.75rem',
+                      padding: '0.5rem 1rem',
+                      letterSpacing: '0.1em',
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      borderRadius: 0,
+                      opacity: activeView === item.id ? 1 : 0.6
+                    }}
                   >
                     {item.name}
                   </button>
@@ -92,46 +100,52 @@ const Navbar: React.FC<NavbarProps> = ({ onNavClick, activeView, shopName, isLog
               {isLoggedIn ? (
                 <div className="d-flex align-items-center gap-3">
                   <div className="text-end">
-                    <span className="d-block text-muted fw-bold text-uppercase" style={{ fontSize: '0.625rem', letterSpacing: '0.05em' }}>Logged In</span>
+                    <span className="d-block text-dark fw-bold text-uppercase" style={{ fontSize: '0.625rem', letterSpacing: '0.1em', opacity: 0.6 }}>Logged In</span>
                     <span className="d-block text-dark fw-bold" style={{ fontSize: '0.75rem' }}>{shopName}</span>
                   </div>
-                  <div className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow"
-                       style={{ width: '36px', height: '36px', fontSize: '0.75rem', background: 'linear-gradient(135deg, #4F46E5, #0F172A)' }}>
+                  <div className="d-flex align-items-center justify-content-center text-white fw-bold bg-dark"
+                       style={{ width: '36px', height: '36px', fontSize: '0.75rem' }}>
                     {shopName?.substring(0,1).toUpperCase() || "U"}
                   </div>
                 </div>
               ) : (
                 <button
                   onClick={onLoginClick}
-                  className="btn btn-primary rounded-pill fw-bold text-uppercase position-relative overflow-hidden"
-                  style={{ fontSize: '0.75rem', letterSpacing: '0.05em', padding: '0.625rem 2rem', background: 'linear-gradient(90deg, #4F46E5, #6366F1, #4F46E5)' }}
+                  className="btn border border-dark text-dark fw-bold text-uppercase"
+                  style={{
+                    fontSize: '0.75rem',
+                    letterSpacing: '0.1em',
+                    padding: '0.625rem 2rem',
+                    backgroundColor: 'transparent',
+                    borderRadius: 0
+                  }}
                 >
-                  <span className="d-flex align-items-center gap-2">
-                    <svg style={{ width: '12px', height: '12px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
-                    </svg>
-                    Login
-                  </span>
+                  LOGIN
                 </button>
               )}
 
               <button
                 onClick={() => onNavClick(isLanding ? 'workbench' : 'landing')}
-                className="btn btn-dark rounded-pill fw-bold shadow"
-                style={{ fontSize: '0.75rem', letterSpacing: '0.05em', padding: '0.625rem 1.5rem' }}
+                className="btn bg-dark text-white fw-bold text-uppercase"
+                style={{
+                  fontSize: '0.75rem',
+                  letterSpacing: '0.1em',
+                  padding: '0.625rem 1.5rem',
+                  borderRadius: 0
+                }}
               >
-                {isLanding ? 'Open Studio' : 'Exit Studio'}
+                {isLanding ? 'OPEN STUDIO' : 'EXIT STUDIO'}
               </button>
             </div>
           </div>
         </nav>
 
         {/* Mobile Menu Dropdown */}
-        <div className={`position-fixed start-0 end-0 bg-white bg-opacity-95 rounded-4 shadow border border-light overflow-hidden transition-all ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0'}`}
+        <div className={`position-fixed start-0 end-0 bg-white border-top border-bottom overflow-hidden transition-all ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0'}`}
              style={{
                top: '80px',
                margin: '0 1rem',
-               backdropFilter: 'blur(20px)',
+               borderColor: '#e0e0e0 !important',
                transform: isMobileMenuOpen ? 'scale(1) translateY(0)' : 'scale(0.95) translateY(-1rem)',
                pointerEvents: isMobileMenuOpen ? 'auto' : 'none',
                transition: 'all 0.3s ease'
@@ -141,46 +155,63 @@ const Navbar: React.FC<NavbarProps> = ({ onNavClick, activeView, shopName, isLog
               <button
                 key={item.id}
                 onClick={() => handleMobileNav(item.id)}
-                className={`btn w-100 text-start rounded-3 fw-bold ${
+                className={`btn w-100 text-start fw-bold text-uppercase ${
                   activeView === item.id
-                    ? 'btn-light text-dark'
-                    : 'btn-link text-secondary text-decoration-none'
+                    ? 'bg-dark text-white'
+                    : 'border border-dark text-dark'
                 }`}
-                style={{ fontSize: '0.875rem', padding: '1rem' }}
+                style={{
+                  fontSize: '0.875rem',
+                  padding: '1rem',
+                  letterSpacing: '0.1em',
+                  borderRadius: 0,
+                  backgroundColor: activeView === item.id ? '#000000' : 'transparent'
+                }}
               >
                 {item.name}
               </button>
             ))}
 
-            <hr className="my-2" />
+            <div className="border-top my-2" style={{ borderColor: '#e0e0e0 !important' }} />
 
             {isLoggedIn ? (
               <div className="d-flex align-items-center gap-3 px-3 py-2">
-                <div className="rounded-circle bg-dark text-white d-flex align-items-center justify-content-center fw-bold"
+                <div className="bg-dark text-white d-flex align-items-center justify-content-center fw-bold"
                      style={{ width: '40px', height: '40px', fontSize: '0.875rem' }}>
                   {shopName?.substring(0,1).toUpperCase()}
                 </div>
                 <div>
                   <span className="d-block text-dark fw-bold" style={{ fontSize: '0.875rem' }}>{shopName}</span>
-                  <span className="d-block text-success fw-medium" style={{ fontSize: '0.75rem' }}>● Active Session</span>
+                  <span className="d-block text-dark fw-medium" style={{ fontSize: '0.75rem', opacity: 0.6 }}>ACTIVE SESSION</span>
                 </div>
               </div>
             ) : (
               <button
                 onClick={() => { onLoginClick && onLoginClick(); setIsMobileMenuOpen(false); }}
-                className="btn w-100 btn-primary rounded-3 fw-bold text-white shadow"
-                style={{ fontSize: '0.875rem', padding: '1rem', background: 'linear-gradient(90deg, #4F46E5, #6366F1)' }}
+                className="btn w-100 border border-dark text-dark fw-bold text-uppercase"
+                style={{
+                  fontSize: '0.875rem',
+                  padding: '1rem',
+                  backgroundColor: 'transparent',
+                  letterSpacing: '0.1em',
+                  borderRadius: 0
+                }}
               >
-                Login to Workspace
+                LOGIN
               </button>
             )}
 
             <button
               onClick={() => handleMobileNav(isLanding ? 'workbench' : 'landing')}
-              className="btn w-100 btn-dark rounded-3 fw-bold text-uppercase shadow"
-              style={{ fontSize: '0.875rem', letterSpacing: '0.05em', padding: '1rem' }}
+              className="btn w-100 bg-dark text-white fw-bold text-uppercase"
+              style={{
+                fontSize: '0.875rem',
+                letterSpacing: '0.1em',
+                padding: '1rem',
+                borderRadius: 0
+              }}
             >
-              {isLanding ? 'Launch Studio' : 'Exit Studio'}
+              {isLanding ? 'LAUNCH STUDIO' : 'EXIT STUDIO'}
             </button>
           </div>
         </div>
@@ -189,8 +220,8 @@ const Navbar: React.FC<NavbarProps> = ({ onNavClick, activeView, shopName, isLog
       {/* Mobile Backdrop */}
       {isMobileMenuOpen && (
         <div
-          className="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-25"
-          style={{ backdropFilter: 'blur(4px)', zIndex: 140 }}
+          className="position-fixed top-0 start-0 w-100 h-100"
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)', backdropFilter: 'blur(4px)', zIndex: 140 }}
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}

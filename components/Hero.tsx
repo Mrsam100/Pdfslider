@@ -85,29 +85,51 @@ const Hero: React.FC<HeroProps> = ({ onFileSelect }) => {
 
   return (
     <section className="position-relative min-vh-100 d-flex flex-column align-items-center justify-content-center px-3 overflow-hidden"
-             style={{ paddingTop: '5rem', paddingBottom: '3rem', backgroundColor: '#F8FAFC' }}>
-
-      {/* Background */}
-      <div className="position-absolute top-0 start-0 w-100 h-100"
-           style={{
-             zIndex: -1,
-             background: 'radial-gradient(ellipse at center, #ffffff 0%, #F1F5F9 50%, #E2E8F0 100%)'
-           }}></div>
-      <div className="position-absolute top-0 start-0 w-100 h-100"
-           style={{
-             opacity: 0.03,
-             backgroundImage: "url('https://www.transparenttextures.com/patterns/graphy.png')"
-           }}></div>
+             style={{ paddingTop: '5rem', paddingBottom: '3rem', backgroundColor: '#ffffff' }}>
 
       <div className="container" style={{ maxWidth: '900px', zIndex: 10 }}>
         <div className="text-center animate-fade-in">
 
-          <h1 className="display-1 fw-black text-dark mb-3 mb-md-4" style={{ lineHeight: 1.1, letterSpacing: '-0.02em' }}>
-            Upload PDF, <span className="gradient-text">Get Slides</span>
+          {/* Logo/Brand */}
+          <div className="d-flex align-items-center justify-content-center gap-2 mb-4">
+            <div className="bg-dark d-flex align-items-center justify-content-center"
+                 style={{ width: '48px', height: '48px' }}>
+              <span className="fw-black text-white" style={{ fontSize: '24px' }}>P</span>
+            </div>
+            <span className="fw-bold text-dark" style={{ fontSize: '20px', letterSpacing: '0.1em' }}>PDFSLIDER</span>
+          </div>
+
+          <h1 className="display-1 fw-black text-dark mb-2"
+              style={{
+                lineHeight: 1,
+                letterSpacing: '-0.02em',
+                fontSize: 'clamp(3rem, 8vw, 6rem)'
+              }}>
+            PDF
+          </h1>
+          <h1 className="display-1 fw-black text-dark mb-4"
+              style={{
+                lineHeight: 1,
+                letterSpacing: '-0.02em',
+                fontSize: 'clamp(3rem, 8vw, 6rem)',
+                textDecoration: 'underline',
+                textDecorationThickness: '8px',
+                textUnderlineOffset: '8px'
+              }}>
+            SLIDER.
           </h1>
 
-          <p className="fs-5 text-secondary mb-5 mx-auto fw-medium px-3" style={{ maxWidth: '42rem', lineHeight: 1.6 }}>
-            Convert your documents into presentation slides instantly.
+          <p className="text-dark mb-4 mx-auto fw-normal px-3"
+             style={{
+               maxWidth: '32rem',
+               lineHeight: 1.6,
+               fontSize: '1rem',
+               letterSpacing: '0.05em'
+             }}>
+            DROP ANY DOCUMENT. RECEIVE A<br/>
+            BEAUTIFULLY DESIGNED, SHAREABLE,<br/>
+            ONE-PAGE DISTILLATION INSTANTLY. NO<br/>
+            NOISE. JUST THE ESSENCE.
           </p>
 
           {/* Upload Zone */}
@@ -133,36 +155,43 @@ const Hero: React.FC<HeroProps> = ({ onFileSelect }) => {
             />
 
             {/* Main Action Button */}
-            <div
-              className={`w-100 rounded-5 p-4 p-md-5 shadow d-flex flex-column align-items-center justify-content-center gap-3 gap-md-4 border border-4 ${
-                isDragging
-                  ? 'bg-primary border-primary'
-                  : 'bg-dark border-dark'
+            <button
+              className={`w-100 p-4 d-flex flex-column align-items-center justify-content-center gap-3 border ${
+                isDragging ? 'border-dark bg-dark' : 'border-dark'
               }`}
               style={{
-                borderRadius: '40px',
+                backgroundColor: isDragging ? 'rgba(0, 0, 0, 0.1)' : 'transparent',
+                borderWidth: '2px',
+                borderRadius: '0',
                 transition: 'all 0.3s ease',
-                boxShadow: isDragging ? '0 0 0 8px rgba(79, 70, 229, 0.2)' : '0 20px 50px rgba(15, 23, 42, 0.3)'
+                maxWidth: '400px',
+                margin: '0 auto'
               }}
             >
-              <div className={`rounded-circle d-flex align-items-center justify-content-center border border-2 shadow-sm ${
-                isDragging ? 'bg-white bg-opacity-25 border-white border-opacity-50' : 'bg-white bg-opacity-10 border-white border-opacity-25'
-              }`}
-                   style={{ width: '5rem', height: '5rem', backdropFilter: 'blur(10px)' }}>
-                <svg style={{ width: '2.5rem', height: '2.5rem' }} className="text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
-                </svg>
-              </div>
-
               <div className="text-center">
-                <span className="d-block display-6 fw-black mb-2 text-white" style={{ letterSpacing: '-0.02em' }}>
-                  {isDragging ? 'Drop Here' : 'Choose File'}
+                <div className="d-flex align-items-center justify-content-center gap-2 mb-2">
+                  <div className="bg-dark d-flex align-items-center justify-content-center"
+                       style={{ width: '32px', height: '32px' }}>
+                    <span className="fw-black text-white" style={{ fontSize: '16px' }}>P</span>
+                  </div>
+                </div>
+                <span className="d-block fw-bold text-dark mb-2"
+                      style={{
+                        fontSize: '1.25rem',
+                        letterSpacing: '0.1em'
+                      }}>
+                  {isDragging ? 'DROP HERE' : 'START'}
                 </span>
-                <span className="d-block text-secondary fw-medium" style={{ fontSize: '0.875rem', color: '#CBD5E1' }}>
-                  PDF or DOCX • Max 50MB
+                <span className="d-block text-dark"
+                      style={{
+                        fontSize: '0.75rem',
+                        letterSpacing: '0.05em',
+                        opacity: 0.7
+                      }}>
+                  PDF OR DOCX • MAX 50MB
                 </span>
               </div>
-            </div>
+            </button>
           </div>
 
         </div>

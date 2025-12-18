@@ -311,15 +311,15 @@ const App: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-vh-100 d-flex flex-column align-items-center justify-content-center" style={{backgroundColor: '#F8FAFC'}}>
-          <div className="border border-4 rounded-circle animate-spin mb-3" style={{width: '4rem', height: '4rem', borderColor: '#0F172A', borderTopColor: 'transparent'}}></div>
-          <div className="fw-bold text-secondary fs-6 letterSpacing uppercase animate-pulse" style={{letterSpacing: '0.25em'}}>Initializing Engine</div>
+      <div className="min-vh-100 d-flex flex-column align-items-center justify-content-center" style={{backgroundColor: '#ffffff'}}>
+          <div className="border border-4 rounded-circle animate-spin mb-3" style={{width: '4rem', height: '4rem', borderColor: '#000000', borderTopColor: 'transparent'}}></div>
+          <div className="fw-bold text-dark fs-6 letterSpacing uppercase animate-pulse" style={{letterSpacing: '0.25em'}}>INITIALIZING ENGINE</div>
       </div>
     );
   }
 
   return (
-    <div className="min-vh-100" style={{backgroundColor: '#F8FAFC', color: '#0F172A'}}>
+    <div className="min-vh-100" style={{backgroundColor: '#ffffff', color: '#000000'}}>
       <Navbar
         onNavClick={handleNav}
         activeView={view}
@@ -339,22 +339,22 @@ const App: React.FC = () => {
            <div className="mx-auto p-4 text-center" style={{maxWidth: '28rem'}}>
               <div className="position-relative mx-auto mb-4" style={{width: '6rem', height: '6rem'}}>
                   <svg className="w-100 h-100" style={{transform: 'rotate(-90deg)'}}>
-                    <circle cx="48" cy="48" r="40" fill="none" stroke="#E2E8F0" strokeWidth="8" />
+                    <circle cx="48" cy="48" r="40" fill="none" stroke="#e0e0e0" strokeWidth="8" />
                     <circle
                       cx="48" cy="48" r="40"
-                      fill="none" stroke="#0F172A" strokeWidth="8"
+                      fill="none" stroke="#000000" strokeWidth="8"
                       strokeDasharray="251.2"
                       strokeDashoffset={251.2 - (251.2 * conversionProgress) / 100}
                       strokeLinecap="round"
                       className="transition-all duration-300 ease-out"
                     />
                   </svg>
-                  <div className="position-absolute top-0 start-0 end-0 bottom-0 d-flex align-items-center justify-content-center fw-bold fs-4" style={{color: '#0F172A'}}>
+                  <div className="position-absolute top-0 start-0 end-0 bottom-0 d-flex align-items-center justify-content-center fw-bold fs-4" style={{color: '#000000'}}>
                     {conversionProgress}%
                   </div>
               </div>
-              <h2 className="fs-3 fw-bold mb-2" style={{color: '#0F172A'}}>Synthesizing Presentation</h2>
-              <p className="text-muted fs-6 fw-medium animate-pulse">{conversionStage}</p>
+              <h2 className="fs-3 fw-bold mb-2" style={{color: '#000000', letterSpacing: '0.1em'}}>DISTILLING</h2>
+              <p className="text-dark fs-6 fw-medium animate-pulse" style={{opacity: 0.7, letterSpacing: '0.05em'}}>{conversionStage}</p>
            </div>
         </div>
       )}
@@ -372,13 +372,13 @@ const App: React.FC = () => {
               <div className="px-3 px-md-4 pb-3">
                 <button
                   onClick={() => handleNav('landing')}
-                  className="btn btn-light d-flex align-items-center gap-2 rounded-pill shadow-sm border"
-                  style={{fontSize: '0.9rem'}}
+                  className="btn border border-dark text-dark d-flex align-items-center gap-2 fw-bold text-uppercase"
+                  style={{fontSize: '0.75rem', letterSpacing: '0.1em', backgroundColor: 'transparent', borderRadius: 0, padding: '0.625rem 1.5rem'}}
                 >
                   <svg style={{width: '18px', height: '18px'}} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                   </svg>
-                  Back to Home
+                  BACK TO HOME
                 </button>
               </div>
 
@@ -398,13 +398,13 @@ const App: React.FC = () => {
               <div className="px-3 px-md-4 pb-3">
                 <button
                   onClick={() => handleNav('landing')}
-                  className="btn btn-light d-flex align-items-center gap-2 rounded-pill shadow-sm border"
-                  style={{fontSize: '0.9rem'}}
+                  className="btn border border-dark text-dark d-flex align-items-center gap-2 fw-bold text-uppercase"
+                  style={{fontSize: '0.75rem', letterSpacing: '0.1em', backgroundColor: 'transparent', borderRadius: 0, padding: '0.625rem 1.5rem'}}
                 >
                   <svg style={{width: '18px', height: '18px'}} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                   </svg>
-                  Back to Home
+                  BACK TO HOME
                 </button>
               </div>
 
