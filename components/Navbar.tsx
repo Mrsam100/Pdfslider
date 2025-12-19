@@ -52,7 +52,7 @@ const Navbar: React.FC<NavbarProps> = ({ onNavClick, activeView, shopName, isLog
 
             {/* Mobile Hamburger */}
             <button
-              className="navbar-toggler border-0"
+              className="navbar-toggler border-0 d-lg-none"
               type="button"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
@@ -141,14 +141,16 @@ const Navbar: React.FC<NavbarProps> = ({ onNavClick, activeView, shopName, isLog
         </nav>
 
         {/* Mobile Menu Dropdown */}
-        <div className={`position-fixed start-0 end-0 bg-white border-top border-bottom overflow-hidden transition-all ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0'}`}
+        <div className={`position-fixed start-0 end-0 bg-white border-top border-bottom overflow-hidden transition-all d-lg-none ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0'}`}
              style={{
-               top: '80px',
-               margin: '0 1rem',
+               top: '60px',
+               margin: '0 0.5rem',
                borderColor: '#e0e0e0 !important',
                transform: isMobileMenuOpen ? 'scale(1) translateY(0)' : 'scale(0.95) translateY(-1rem)',
                pointerEvents: isMobileMenuOpen ? 'auto' : 'none',
-               transition: 'all 0.3s ease'
+               transition: 'all 0.3s ease',
+               maxHeight: 'calc(100vh - 80px)',
+               overflowY: 'auto'
              }}>
           <div className="p-4 d-flex flex-column gap-3">
             {navItems.map((item) => (
@@ -220,7 +222,7 @@ const Navbar: React.FC<NavbarProps> = ({ onNavClick, activeView, shopName, isLog
       {/* Mobile Backdrop */}
       {isMobileMenuOpen && (
         <div
-          className="position-fixed top-0 start-0 w-100 h-100"
+          className="position-fixed top-0 start-0 w-100 h-100 d-lg-none"
           style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)', backdropFilter: 'blur(4px)', zIndex: 140 }}
           onClick={() => setIsMobileMenuOpen(false)}
         />

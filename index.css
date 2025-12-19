@@ -322,3 +322,104 @@ select:focus {
 @media (prefers-color-scheme: dark) {
   /* Add dark mode styles here when implementing */
 }
+
+/* Mobile-specific responsive styles */
+@media (max-width: 767.98px) {
+  /* Improve touch targets on mobile */
+  button,
+  a,
+  input[type="button"],
+  input[type="submit"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Better text scaling */
+  body {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* Prevent horizontal scroll */
+  html,
+  body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  /* Optimize spacing for mobile */
+  .container,
+  .container-fluid {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Stack elements on mobile */
+  .d-flex {
+    flex-wrap: wrap;
+  }
+
+  /* Better padding for cards on mobile */
+  .card,
+  .clay-card {
+    margin-bottom: 1rem;
+  }
+
+  /* Optimize form inputs for mobile */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="file"],
+  textarea,
+  select {
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 0.75rem;
+  }
+
+  /* Better modal handling on mobile */
+  .modal-dialog {
+    margin: 0.5rem;
+  }
+
+  /* Optimize images for mobile */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* Tablet responsive styles */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  /* Tablet-specific optimizations */
+  .container {
+    max-width: 100%;
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* Prevent text selection on buttons and interactive elements */
+button,
+.btn {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Improve performance on mobile animations */
+@media (max-width: 767.98px) {
+  * {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+
+  /* Reduce animation complexity on mobile */
+  .animate-fade-in,
+  .animate-slide-in-right,
+  .animate-slide-in-left,
+  .animate-slide-up {
+    animation-duration: 200ms;
+  }
+}
