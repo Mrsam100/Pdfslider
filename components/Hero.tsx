@@ -5,6 +5,7 @@
 
 import React, { useRef, useState } from 'react';
 import { useToast } from '../contexts/ToastContext';
+import { validationService } from '../services/validationService';
 
 interface HeroProps {
   onFileSelect: (file: File) => void;
@@ -14,51 +15,41 @@ const Hero: React.FC<HeroProps> = ({ onFileSelect }) => {
   const { showToast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
   };
 
   const validateAndProcessFile = (file: File): boolean => {
-    // Validate file extension
-    const extension = file.name.split('.').pop()?.toLowerCase();
-    if (extension !== 'pdf' && extension !== 'docx') {
-      showToast("Please select a PDF or DOCX file.", 'error');
-      return false;
-    }
+    // Use validation service for comprehensive file validation
+    const validation = validationService.validateFile(file, {
+      maxSize: 50 * 1024 * 1024, // 50MB
+      allowedTypes: [
+        'application/pdf',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/msword'
+      ],
+      allowedExtensions: ['pdf', 'docx']
+    });
 
-    // Validate MIME type for additional security
-    const validMimeTypes = [
-      'application/pdf',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      'application/msword' // For older .doc files if they're renamed to .docx
-    ];
-
-    if (!validMimeTypes.includes(file.type)) {
-      showToast(`Invalid file type: ${file.type}. Please select a valid PDF or DOCX file.`, 'error');
-      return false;
-    }
-
-    // Validate file size (max 50MB)
-    const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
-    if (file.size > MAX_FILE_SIZE) {
-      showToast(`File too large: ${(file.size / 1024 / 1024).toFixed(2)}MB. Maximum size is 50MB.`, 'error');
-      return false;
-    }
-
-    // Check for minimum file size (avoid empty files)
-    if (file.size < 100) { // 100 bytes minimum
-      showToast("File appears to be empty or corrupted.", 'error');
+    if (!validation.valid) {
+      showToast(validation.error || 'Invalid file. Please select a valid PDF or DOCX file.', 'error');
       return false;
     }
 
     return true;
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && validateAndProcessFile(file)) {
-      onFileSelect(file);
+      setIsProcessing(true);
+      try {
+        await onFileSelect(file);
+      } finally {
+        setIsProcessing(false);
+      }
     }
     // Reset input to allow re-selecting the same file
     if (e.target) e.target.value = '';
@@ -74,12 +65,17 @@ const Hero: React.FC<HeroProps> = ({ onFileSelect }) => {
     setIsDragging(false);
   };
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
     const file = e.dataTransfer.files?.[0];
     if (file && validateAndProcessFile(file)) {
-      onFileSelect(file);
+      setIsProcessing(true);
+      try {
+        await onFileSelect(file);
+      } finally {
+        setIsProcessing(false);
+      }
     }
   };
 
@@ -137,14 +133,15 @@ const Hero: React.FC<HeroProps> = ({ onFileSelect }) => {
             className={`mx-auto position-relative transition-all ${isDragging ? '' : ''}`}
             style={{
               maxWidth: '36rem',
-              cursor: 'pointer',
+              cursor: isProcessing ? 'not-allowed' : 'pointer',
               transform: isDragging ? 'scale(1.05)' : 'scale(1)',
-              transition: 'transform 0.5s ease'
+              transition: 'transform 0.5s ease',
+              opacity: isProcessing ? 0.7 : 1
             }}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
-            onClick={handleUploadClick}
+            onClick={isProcessing ? undefined : handleUploadClick}
           >
             <input
               type="file"
@@ -152,10 +149,16 @@ const Hero: React.FC<HeroProps> = ({ onFileSelect }) => {
               onChange={handleFileChange}
               accept=".pdf,.docx"
               className="d-none"
+              aria-label="Upload PDF or DOCX file"
+              id="file-upload-input"
             />
 
             {/* Main Action Button */}
             <button
+              disabled={isProcessing}
+              type="button"
+              aria-label={isProcessing ? 'Processing file, please wait' : isDragging ? 'Drop file here' : 'Click to upload PDF or DOCX file'}
+              aria-busy={isProcessing}
               className={`w-100 p-4 d-flex flex-column align-items-center justify-content-center gap-3 border ${
                 isDragging ? 'border-dark bg-dark' : 'border-dark'
               }`}
@@ -170,17 +173,21 @@ const Hero: React.FC<HeroProps> = ({ onFileSelect }) => {
             >
               <div className="text-center">
                 <div className="d-flex align-items-center justify-content-center gap-2 mb-2">
-                  <div className="bg-dark d-flex align-items-center justify-content-center"
-                       style={{ width: '32px', height: '32px' }}>
-                    <span className="fw-black text-white" style={{ fontSize: '16px' }}>P</span>
-                  </div>
+                  {isProcessing ? (
+                    <div className="spinner" style={{ width: '32px', height: '32px' }}></div>
+                  ) : (
+                    <div className="bg-dark d-flex align-items-center justify-content-center"
+                         style={{ width: '32px', height: '32px' }}>
+                      <span className="fw-black text-white" style={{ fontSize: '16px' }}>P</span>
+                    </div>
+                  )}
                 </div>
                 <span className="d-block fw-bold text-dark mb-2"
                       style={{
                         fontSize: '1.25rem',
                         letterSpacing: '0.1em'
                       }}>
-                  {isDragging ? 'DROP HERE' : 'START'}
+                  {isProcessing ? 'PROCESSING...' : isDragging ? 'DROP HERE' : 'START'}
                 </span>
                 <span className="d-block text-dark"
                       style={{

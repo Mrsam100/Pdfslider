@@ -38,8 +38,8 @@ interface GeminiResponse {
 
 export const analyzePdfForSlides = async (
   rawText: string,
-  timeoutMs: number = 120000, // 2 minutes default timeout
-  maxRetries: number = 2
+  timeoutMs: number = 300000, // 5 minutes default timeout for larger PDFs
+  maxRetries: number = 3
 ): Promise<GeminiResponse | null> => {
   // Check if AI client is initialized
   if (!ai) {
@@ -60,31 +60,114 @@ export const analyzePdfForSlides = async (
       // INCREASED CONTEXT LIMIT: 800,000 characters (~200k tokens) to ensure ALL data from large PDFs is captured.
       const context = rawText.substring(0, 800000);
 
-    const prompt = `You are an elite Presentation Architect. Your task is to transform the provided document into three distinct presentation decks.
+    const prompt = `You are an elite Presentation Designer and Content Strategist. Transform the provided document into three visually stunning, professionally structured presentation decks.
 
-    CRITICAL REQUIREMENT: 
-    - You must incorporate **EACH AND EVERY WORD OF DATA** from the source where possible. 
-    - **DO NOT SUMMARIZE** if it causes loss of detail. Include all statistics, names, facts, and figures.
-    - If the document is dense, create MORE slides to accommodate the text. Do not compress it.
-    - Only request an image if the slide specifically warrants a visual representation (e.g., a chart, a specific scene, a diagram). If the slide is purely text-heavy data, leave the image prompt empty to maximize text space.
+    DESIGN PRINCIPLES:
+    - Create presentation-ready content that looks PROFESSIONAL and POLISHED
+    - Use clear visual hierarchy with powerful headlines and concise, impactful bullet points
+    - Each bullet should be ONE clear, complete thought (not just a fragment)
+    - Include ALL critical data, statistics, and key insights from the source
+    - Think like a designer: structure content for maximum visual appeal and clarity
+
+    CONTENT QUALITY STANDARDS:
+    - Titles: Powerful, action-oriented headlines (6-10 words max). Use strong verbs.
+    - Bullets: 4-6 high-impact points per slide. Each bullet should be a complete sentence or powerful statement.
+    - Language: Professional, confident, concise. Avoid filler words.
+    - Data: Include specific numbers, percentages, and metrics where available
+    - Structure: Logical flow from high-level concepts to specific details
 
     SOURCE DOCUMENT:
     ${context}
 
     TASK:
-    Generate 3 separate slide decks. Each deck must cover the ENTIRETY of the source data but with a different strategic angle:
-    1. "ExecutiveDeck": Focus on ROI, outcomes, business impact, and strategic decisions.
-    2. "CreativeDeck": Narrative-driven, metaphors, focus on vision, future, and human impact.
-    3. "TechnicalDeck": Extremely detailed, granular data, methodology, implementation specs, and rigorous facts.
+    Generate 3 professionally designed slide decks. Each deck covers the source material with a different strategic lens:
 
-    FOR EACH SLIDE in each deck, provide:
-    - title: Strong, descriptive headline.
-    - bullets: 6-10 detailed points containing specific numbers/facts from the text. Make them comprehensive.
-    - category: Section header.
-    - diagramType: 'text', 'bar_chart', 'pie_chart', 'process_flow', 'timeline'.
-    - imagePrompt: (OPTIONAL) A specific, photorealistic AI image prompt describing a visual scene. **Return an empty string** if the slide should focus purely on text data.
+    1. "ExecutiveDeck": Strategic focus
+       - Business outcomes, ROI, market impact, decision frameworks
+       - Bold, confident language with clear business value
+       - Use metrics and KPIs prominently
 
-    OUTPUT FORMAT: JSON Object containing 3 arrays: executiveDeck, creativeDeck, technicalDeck.
+    2. "CreativeDeck": Narrative focus
+       - Story-driven content with vision and inspiration
+       - Human impact, innovation, future possibilities
+       - Use metaphors and compelling narratives
+
+    3. "TechnicalDeck": Detailed focus
+       - In-depth methodology, implementation details, technical specs
+       - Comprehensive data, processes, and frameworks
+       - Precise, technical language with complete information
+
+    FOR EACH SLIDE:
+    - title: Compelling, action-oriented headline (6-10 words). Examples: "Driving 40% Revenue Growth Through Innovation", "Transforming Customer Experience with AI"
+    - bullets: 4-6 impactful, complete sentences. Each bullet must:
+      • Start with a strong verb or key concept
+      • Include specific data/numbers when available
+      • Be clear and self-contained (not fragments)
+      • Create visual hierarchy (mix short and medium-length points)
+    - category: Clear section header (2-4 words). Examples: "Strategic Overview", "Market Analysis", "Implementation Roadmap"
+    - diagramType: Choose the BEST visual type for the content:
+      • 'text' - For concept-heavy, strategy, or narrative content
+      • 'bar_chart' - For comparisons, growth trends, performance metrics
+      • 'pie_chart' - For market share, distribution, percentage breakdowns
+      • 'process_flow' - For workflows, timelines, sequential steps
+      • 'timeline' - For historical data, project phases, roadmaps
+    - imagePrompt: (STRATEGIC USE ONLY)
+      • For data visualization slides: Leave EMPTY (use diagramType instead)
+      • For conceptual/vision slides: Provide a detailed, professional image prompt
+      • Format: "Professional [subject] showing [specific elements], modern corporate style, clean design, high quality"
+      • Only include when the visual significantly enhances understanding
+
+    SLIDE STRUCTURE EXAMPLES:
+
+    GOOD Executive Slide:
+    {
+      "title": "Delivering 45% Efficiency Gains Through Digital Transformation",
+      "bullets": [
+        "Automated core processes reduced operational costs by $2.3M annually",
+        "Customer satisfaction scores improved from 72% to 94% in 6 months",
+        "Processing time decreased from 48 hours to 4 hours per transaction",
+        "Employee productivity increased 35% with new collaborative tools",
+        "ROI achieved in 8 months, 18 months ahead of projections"
+      ],
+      "category": "Business Impact",
+      "diagramType": "bar_chart",
+      "imagePrompt": ""
+    }
+
+    GOOD Creative Slide:
+    {
+      "title": "Reimagining the Future of Customer Engagement",
+      "bullets": [
+        "Transform every interaction into a personalized, memorable experience",
+        "Empower customers with intelligent self-service tools that anticipate needs",
+        "Build lasting relationships through proactive, empathetic communication",
+        "Create seamless omnichannel journeys that delight at every touchpoint"
+      ],
+      "category": "Vision & Innovation",
+      "diagramType": "text",
+      "imagePrompt": "Professional diverse business team collaborating in modern office space with futuristic technology interfaces, innovative workspace, bright natural lighting, high quality corporate photography"
+    }
+
+    BAD Slide (DON'T DO THIS):
+    {
+      "title": "Information",
+      "bullets": [
+        "Various improvements",
+        "Better results",
+        "Cost reduction",
+        "Increased efficiency",
+        "Good outcomes",
+        "Positive feedback",
+        "More data",
+        "New processes"
+      ],
+      "category": "Update",
+      "diagramType": "text",
+      "imagePrompt": "business stuff"
+    }
+
+    OUTPUT FORMAT: JSON Object with 3 arrays: executiveDeck, creativeDeck, technicalDeck.
+    Each deck should have 6-12 slides covering all key content from the source material.
     `;
 
     const slideSchema = {

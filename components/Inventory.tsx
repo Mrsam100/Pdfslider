@@ -5,6 +5,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { ConversionJob } from '../types';
+import ConfirmDialog from './ConfirmDialog';
 
 interface LibraryProps {
   products: ConversionJob[];
@@ -15,6 +16,8 @@ interface LibraryProps {
 
 const Inventory: React.FC<LibraryProps> = ({ products, onOp, onExport }) => {
   const [search, setSearch] = useState('');
+  const [loadingImages, setLoadingImages] = useState<Record<string, boolean>>({});
+  const [deleteConfirm, setDeleteConfirm] = useState<ConversionJob | null>(null);
 
   const filtered = useMemo(() => {
     return products.filter(s => {
@@ -22,6 +25,38 @@ const Inventory: React.FC<LibraryProps> = ({ products, onOp, onExport }) => {
              s.originalFileName.toLowerCase().includes(search.toLowerCase());
     });
   }, [products, search]);
+
+  const handleImageLoad = (id: string) => {
+    setLoadingImages(prev => ({ ...prev, [id]: false }));
+  };
+
+  const handleImageError = (id: string) => {
+    setLoadingImages(prev => ({ ...prev, [id]: false }));
+  };
+
+  // Initialize loading state for all images
+  React.useEffect(() => {
+    const initialLoadingState: Record<string, boolean> = {};
+    filtered.forEach(s => {
+      initialLoadingState[s.id] = true;
+    });
+    setLoadingImages(initialLoadingState);
+  }, [filtered]);
+
+  const handleDeleteClick = (job: ConversionJob) => {
+    setDeleteConfirm(job);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deleteConfirm) {
+      onOp(deleteConfirm, 'delete');
+      setDeleteConfirm(null);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteConfirm(null);
+  };
 
   return (
     <div className="mx-auto p-3 p-md-5" style={{maxWidth: '1400px', animation: 'fadeIn 0.6s ease-out'}}>
@@ -50,12 +85,24 @@ const Inventory: React.FC<LibraryProps> = ({ products, onOp, onExport }) => {
               <div key={s.id} className="col-12 col-sm-6 col-lg-4 col-xl-3">
                   <div className="clay-card p-0 bg-white overflow-hidden" style={{transition: 'all 0.3s'}} onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'} onMouseLeave={(e) => e.currentTarget.style.boxShadow = ''}>
                       <div className="position-relative overflow-hidden" style={{height: '10rem', backgroundColor: '#f8f9fa'}}>
-                          <img src={s.thumbnailUrl} className="w-100 h-100" style={{objectFit: 'cover', transition: 'transform 0.7s'}} alt="Preview" onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseLeave={(e) => e.currentTarget.style.transform = ''} />
-                          <div className="position-absolute top-0 start-0 end-0 bottom-0 d-flex align-items-center justify-content-center gap-2" style={{backgroundColor: 'rgba(0,0,0,0.2)', opacity: 0, transition: 'opacity 0.2s'}} onMouseEnter={(e) => e.currentTarget.style.opacity = '1'} onMouseLeave={(e) => e.currentTarget.style.opacity = '0'}>
+                          {loadingImages[s.id] && (
+                            <div className="skeleton w-100 h-100 position-absolute top-0 start-0"></div>
+                          )}
+                          <img
+                            src={s.thumbnailUrl}
+                            className="w-100 h-100"
+                            style={{objectFit: 'cover', transition: 'transform 0.7s', opacity: loadingImages[s.id] ? 0 : 1}}
+                            alt="Preview"
+                            onLoad={() => handleImageLoad(s.id)}
+                            onError={() => handleImageError(s.id)}
+                            onMouseEnter={(e) => !loadingImages[s.id] && (e.currentTarget.style.transform = 'scale(1.05)')}
+                            onMouseLeave={(e) => !loadingImages[s.id] && (e.currentTarget.style.transform = '')}
+                          />
+                          <div className="position-absolute top-0 start-0 end-0 bottom-0 d-flex align-items-center justify-content-center gap-2" style={{backgroundColor: 'rgba(0,0,0,0.2)', opacity: 0, transition: 'opacity 0.2s', pointerEvents: loadingImages[s.id] ? 'none' : 'auto'}} onMouseEnter={(e) => !loadingImages[s.id] && (e.currentTarget.style.opacity = '1')} onMouseLeave={(e) => !loadingImages[s.id] && (e.currentTarget.style.opacity = '0')}>
                                <button onClick={() => onExport(s)} className="p-2 bg-white rounded-circle shadow" style={{transition: 'transform 0.2s'}} onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'} onMouseLeave={(e) => e.currentTarget.style.transform = ''}>
                                    <svg className="w-5 h-5" style={{width: '1.25rem', height: '1.25rem', color: '#111827'}} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                                </button>
-                               <button onClick={() => onOp(s, 'delete')} className="p-2 bg-white rounded-circle shadow text-danger" style={{transition: 'transform 0.2s'}} onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'} onMouseLeave={(e) => e.currentTarget.style.transform = ''}>
+                               <button onClick={() => handleDeleteClick(s)} className="p-2 bg-white rounded-circle shadow text-danger" style={{transition: 'transform 0.2s'}} onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'} onMouseLeave={(e) => e.currentTarget.style.transform = ''}>
                                    <svg className="w-5 h-5" style={{width: '1.25rem', height: '1.25rem'}} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                </button>
                           </div>
@@ -83,6 +130,18 @@ const Inventory: React.FC<LibraryProps> = ({ products, onOp, onExport }) => {
               <p className="text-muted fw-bold">Library is empty.</p>
           </div>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={deleteConfirm !== null}
+        title="Delete Presentation"
+        message={`Are you sure you want to delete "${deleteConfirm?.title}"? This action cannot be undone.`}
+        confirmText="DELETE"
+        cancelText="CANCEL"
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+        variant="danger"
+      />
     </div>
   );
 };

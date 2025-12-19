@@ -20,6 +20,11 @@ const POS: React.FC<StudioProps> = ({ feed, onArchive, onExport, onFileSelect, s
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [selectedJob, setSelectedJob] = useState<ConversionJob | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [loadingThumbnails, setLoadingThumbnails] = useState<Record<string, boolean>>({});
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   /**
    * Validate and sanitize image URLs to prevent XSS
@@ -42,68 +47,78 @@ const POS: React.FC<StudioProps> = ({ feed, onArchive, onExport, onFileSelect, s
     return '';
   };
 
-  const processFile = (file: File | null) => {
+  const processFile = async (file: File | null) => {
     if (!file) return;
     const type = file.name.split('.').pop()?.toLowerCase();
     if (type === 'pdf' || type === 'docx') {
-      onFileSelect(file);
+      setIsUploading(true);
+      try {
+        await onFileSelect(file);
+      } finally {
+        setIsUploading(false);
+      }
     } else {
       showToast("Strategic Engine exclusively processes PDF and DOCX formats.", 'error');
     }
   };
 
+  const handleExport = async (job: ConversionJob, variantId?: string) => {
+    setIsExporting(true);
+    try {
+      await onExport(job, variantId);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   const handleOpenPreview = (job: ConversionJob) => {
       setSelectedJob(job);
+      setCurrentSlideIndex(0); // Reset to first slide
   };
+
+  const handleScrollLeft = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: -600, behavior: 'smooth' });
+    }
+  };
+
+  const handleScrollRight = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: 600, behavior: 'smooth' });
+    }
+  };
+
+  const handleClosePreview = () => {
+    setSelectedJob(null);
+    setCurrentSlideIndex(0);
+  };
+
+  const handleThumbnailLoad = (jobId: string) => {
+    setLoadingThumbnails(prev => ({ ...prev, [jobId]: false }));
+  };
+
+  const handleThumbnailError = (jobId: string) => {
+    setLoadingThumbnails(prev => ({ ...prev, [jobId]: false }));
+  };
+
+  // Initialize loading state for all thumbnails
+  useEffect(() => {
+    const initialLoadingState: Record<string, boolean> = {};
+    feed.forEach(job => {
+      initialLoadingState[job.id] = true;
+    });
+    setLoadingThumbnails(initialLoadingState);
+  }, [feed]);
 
   // Get first variant's slides (always show the primary variant)
   const activeSlides = selectedJob?.variants?.[0]?.slides || [];
 
   return (
-    <div className="mx-auto p-3 p-md-4 d-flex flex-column flex-xl-row gap-4" style={{maxWidth: '1920px', minHeight: 'calc(100vh - 80px)', backgroundColor: '#F8FAFC'}}>
-      
-      {/* LEFT PANEL: UPLOAD & WORKSPACE */}
-      <div className="w-100 d-flex flex-column gap-3" style={{width: '33.333%'}}>
-        {/* Workspace Card */}
-        <div className="clay-card p-3 p-md-4 bg-white d-flex flex-column position-relative overflow-hidden shadow border-top border-4" style={{borderColor: '#4F46E5'}}>
-             <div className="mb-4">
-                 <span className="fs-6 fw-bolder text-secondary text-uppercase d-block mb-1" style={{letterSpacing: '0.25em'}}>Active Workspace</span>
-                 <h2 className="fs-2 fs-md-3 fw-bolder text-truncate" style={{color: '#0F172A'}}>{shopName || 'Executive Studio'}</h2>
-             </div>
+    <div className="mx-auto p-3 p-md-4" style={{maxWidth: '1400px', minHeight: 'calc(100vh - 80px)', backgroundColor: '#ffffff'}}>
 
-             {/* Upload Zone */}
-             <div
-                onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-                onDragLeave={() => setIsDragging(false)}
-                onDrop={(e) => { e.preventDefault(); setIsDragging(false); processFile(e.dataTransfer.files?.[0]); }}
-                className="flex-fill d-flex flex-column align-items-center justify-content-center p-3 text-center cursor-pointer group position-relative overflow-hidden border border-4 border-dashed rounded-3"
-                style={{minHeight: '250px', transition: 'all 0.2s', borderColor: isDragging ? '#4F46E5' : '#dee2e6', backgroundColor: isDragging ? 'rgba(79, 70, 229, 0.05)' : '', transform: isDragging ? 'scale(0.98)' : ''}}
-                onClick={() => fileInputRef.current?.click()}
-             >
-                 {/* Decorative background circle */}
-                 <div className="position-absolute rounded-circle pointer-events-none" style={{top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '256px', height: '256px', backgroundColor: '#4F46E5', opacity: 0.03, transition: 'transform 0.7s'}} onMouseEnter={(e) => e.currentTarget.style.transform = 'translate(-50%, -50%) scale(1.25)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'translate(-50%, -50%)'}></div>
-
-                 <div className="rounded-3 d-flex align-items-center justify-content-center mb-3 mb-md-4 shadow transition-transform z-10" style={{width: '64px', height: '64px', transition: 'transform 0.2s', backgroundColor: isDragging ? '#4F46E5' : 'white', color: isDragging ? 'white' : '#4F46E5', border: isDragging ? 'none' : '1px solid #dee2e6'}} onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'} onMouseLeave={(e) => e.currentTarget.style.transform = ''}>
-                    <svg style={{width: '32px', height: '32px'}} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                 </div>
-                 <h3 className="fs-5 fs-md-4 fw-bold mb-2 z-10" style={{color: '#0F172A'}}>Start New Project</h3>
-                 <p className="fs-6 fs-md-6 text-muted mb-3 mb-md-4 mx-auto fw-medium z-10" style={{maxWidth: '200px'}}>Drag PDF/DOCX here or click to browse.</p>
-                 <button className="px-3 py-2 text-white fs-6 fw-bold text-uppercase rounded-3 shadow-sm z-10" style={{backgroundColor: '#0F172A', letterSpacing: '0.1em', transition: 'background-color 0.2s'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#000000'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#0F172A'}>Upload File</button>
-             </div>
-             
-             <input
-                type="file"
-                ref={fileInputRef}
-                onChange={(e) => processFile(e.target.files?.[0] || null)}
-                accept=".pdf,.docx"
-                className="d-none"
-             />
-        </div>
-      </div>
-
-      {/* RIGHT PANEL: GENERATED DECKS & PREVIEW */}
-      <div className="w-100 d-flex flex-column gap-3" style={{width: '66.666%'}}>
-          <div className="d-flex align-items-center justify-content-between px-2 py-2">
+      {/* MAIN PANEL: GENERATED DECKS & PREVIEW */}
+      <div className="w-100 d-flex flex-column gap-3">
+          <div className="d-flex align-items-center justify-content-between px-2 py-3 position-sticky" style={{top: '10rem', backgroundColor: '#ffffff', zIndex: 99, borderBottom: '1px solid #e5e7eb'}}>
               <h3 className="fs-4 fs-md-3 fw-bolder" style={{color: '#0F172A'}}>Recent Projects</h3>
               <button className="fs-6 fw-bold" style={{color: '#4F46E5'}} onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'} onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}>View All History</button>
           </div>
@@ -123,29 +138,30 @@ const POS: React.FC<StudioProps> = ({ feed, onArchive, onExport, onFileSelect, s
                   </div>
               ) : (
                   feed.map(job => (
-                      <div key={job.id} className="col-12 clay-card p-0 bg-white d-flex flex-column flex-md-row align-items-stretch overflow-hidden group" style={{transition: 'all 0.3s'}} onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 25px 50px -12px rgba(0, 0, 0, 0.25)'} onMouseLeave={(e) => e.currentTarget.style.boxShadow = ''}>
-                          {/* Thumbnail */}
-                          <div className="w-100 position-relative flex-shrink-0 cursor-pointer overflow-hidden" style={{width: '256px', height: '192px', backgroundColor: '#f8f9fa'}} onClick={() => handleOpenPreview(job)}>
+                      <div key={job.id} className="col-12 col-md-6 col-lg-4">
+                        <div className="clay-card p-0 bg-white d-flex flex-column overflow-hidden" style={{transition: 'all 0.3s', border: '1px solid #e0e0e0'}} onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 10px 25px -5px rgba(0, 0, 0, 0.15)'} onMouseLeave={(e) => e.currentTarget.style.boxShadow = ''}>
+                          {/* Thumbnail - PPT 16:9 Aspect Ratio */}
+                          <div className="w-100 position-relative overflow-hidden" style={{aspectRatio: '16/9', backgroundColor: '#f8f9fa'}}>
+                              {loadingThumbnails[job.id] && (
+                                <div className="skeleton w-100 h-100 position-absolute top-0 start-0"></div>
+                              )}
                               <img
                                 src={sanitizeImageUrl(job.thumbnailUrl) || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="256" height="192"%3E%3Crect width="256" height="192" fill="%23f0f0f0"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%23999" font-family="sans-serif"%3ENo Image%3C/text%3E%3C/svg%3E'}
                                 className="w-100 h-100"
-                                style={{objectFit: 'cover', opacity: 0.9, transition: 'transform 0.7s'}}
+                                style={{objectFit: 'cover', opacity: loadingThumbnails[job.id] ? 0 : 0.9, transition: 'transform 0.3s'}}
                                 alt="Cover"
+                                onLoad={() => handleThumbnailLoad(job.id)}
                                 onError={(e) => {
                                   e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="256" height="192"%3E%3Crect width="256" height="192" fill="%23f0f0f0"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%23999" font-family="sans-serif"%3ENo Image%3C/text%3E%3C/svg%3E';
+                                  handleThumbnailError(job.id);
                                 }}
-                                onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-                                onMouseLeave={(e) => e.currentTarget.style.transform = ''}
                               />
-                              <div className="position-absolute top-0 start-0 end-0 bottom-0 d-flex align-items-end p-3" style={{background: 'linear-gradient(to top, rgba(0,0,0,0.6), transparent)'}}>
-                                  <span className="text-white fs-6 fw-bold text-uppercase border px-2 py-1 rounded backdrop-blur-md" style={{letterSpacing: '0.25em', borderColor: 'rgba(255,255,255,0.3)'}}>Preview</span>
-                              </div>
                           </div>
                           
                           <div className="flex-fill p-3 p-md-3 d-flex flex-column justify-content-between">
                               <div>
                                 <div className="d-flex justify-content-between align-items-start mb-2">
-                                    <h4 className="fs-5 fs-md-4 fw-bold cursor-pointer transition-colors" style={{color: '#0F172A'}} onClick={() => handleOpenPreview(job)} onMouseEnter={(e) => e.currentTarget.style.color = '#4F46E5'} onMouseLeave={(e) => e.currentTarget.style.color = '#0F172A'}>{job.title}</h4>
+                                    <h4 className="fs-5 fs-md-4 fw-bold" style={{color: '#0F172A'}}>{job.title}</h4>
                                     <span className="fs-6 fw-bolder text-success bg-success-subtle px-2 py-1 rounded text-uppercase flex-shrink-0 ms-2" style={{letterSpacing: '0.25em'}}>Done</span>
                                 </div>
                                 <div className="d-flex flex-wrap align-items-center gap-2 gap-md-3 fs-6 fw-medium text-secondary mb-3">
@@ -168,6 +184,7 @@ const POS: React.FC<StudioProps> = ({ feed, onArchive, onExport, onFileSelect, s
                                   </button>
                               </div>
                           </div>
+                        </div>
                       </div>
                   ))
               )}
@@ -193,69 +210,196 @@ const POS: React.FC<StudioProps> = ({ feed, onArchive, onExport, onFileSelect, s
                           <div className="flex-fill">
                               <h3 className="fs-4 fw-bold mb-0" style={{color: '#0F172A'}}>{selectedJob.title} <span className="fs-6 text-muted fw-normal">({activeSlides.length} slides)</span></h3>
                           </div>
-                          <button
-                              onClick={() => setSelectedJob(null)}
-                              className="rounded-circle d-flex align-items-center justify-content-center text-muted transition-colors flex-shrink-0 border-0"
-                              style={{width: '40px', height: '40px', backgroundColor: '#f8f9fa'}}
-                              onMouseEnter={(e) => {e.currentTarget.style.backgroundColor = '#e9ecef'; e.currentTarget.style.transform = 'scale(1.05)';}}
-                              onMouseLeave={(e) => {e.currentTarget.style.backgroundColor = '#f8f9fa'; e.currentTarget.style.transform = 'scale(1)';}}
-                          >
-                              <svg style={{width: '22px', height: '22px'}} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                          </button>
+                          <div className="d-flex align-items-center gap-2">
+                            <button
+                                onClick={handleClosePreview}
+                                className="rounded-circle d-flex align-items-center justify-content-center text-muted transition-colors flex-shrink-0 border-0"
+                                style={{width: '40px', height: '40px', backgroundColor: '#f8f9fa'}}
+                                onMouseEnter={(e) => {e.currentTarget.style.backgroundColor = '#e9ecef'; e.currentTarget.style.transform = 'scale(1.05)';}}
+                                onMouseLeave={(e) => {e.currentTarget.style.backgroundColor = '#f8f9fa'; e.currentTarget.style.transform = 'scale(1)';}}
+                                aria-label="Close preview"
+                            >
+                                <svg style={{width: '22px', height: '22px'}} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </button>
+                          </div>
                       </div>
 
                       {/* Download Button */}
                       <div className="d-flex align-items-center gap-2">
                           <button
-                              onClick={() => onExport(selectedJob)}
+                              onClick={() => handleExport(selectedJob)}
+                              disabled={isExporting}
                               className="px-4 py-2 text-white fw-bold rounded-3 shadow d-flex align-items-center gap-2 transition-all border-0"
-                              style={{backgroundColor: '#0F172A', fontSize: '0.95rem'}}
-                              onMouseEnter={(e) => {e.currentTarget.style.backgroundColor = '#000'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.3)';}}
-                              onMouseLeave={(e) => {e.currentTarget.style.backgroundColor = '#0F172A'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '';}}
+                              style={{backgroundColor: '#0F172A', fontSize: '0.95rem', opacity: isExporting ? 0.7 : 1, cursor: isExporting ? 'not-allowed' : 'pointer'}}
+                              onMouseEnter={(e) => {if (!isExporting) {e.currentTarget.style.backgroundColor = '#000'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.3)';}}}
+                              onMouseLeave={(e) => {if (!isExporting) {e.currentTarget.style.backgroundColor = '#0F172A'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '';}}}
                           >
-                              <svg style={{width: '18px', height: '18px'}} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                              Download PPTX
+                              {isExporting ? (
+                                <>
+                                  <div className="spinner" style={{width: '18px', height: '18px', borderWidth: '2px'}}></div>
+                                  Exporting...
+                                </>
+                              ) : (
+                                <>
+                                  <svg style={{width: '18px', height: '18px'}} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                  Download PPTX
+                                </>
+                              )}
                           </button>
                       </div>
                   </div>
 
-                  {/* Slides Grid */}
-                  <div className="flex-fill p-2" style={{backgroundColor: '#F1F5F9', overflowY: 'auto', overflowX: 'hidden'}}>
+                  {/* Scrollable Slide Gallery */}
+                  <div className="flex-fill d-flex flex-column position-relative" style={{backgroundColor: '#F1F5F9'}}>
                       {activeSlides.length === 0 ? (
-                          <div className="d-flex align-items-center justify-content-center h-100">
-                              <div className="text-center">
-                                  <div className="fs-1 mb-3 text-muted">📄</div>
-                                  <p className="fs-5 text-muted">No slides to display</p>
+                          <div className="text-center d-flex align-items-center justify-content-center h-100">
+                              <div>
+                                <div className="fs-1 mb-3 text-muted">📄</div>
+                                <p className="fs-5 text-muted">No slides to display</p>
                               </div>
                           </div>
                       ) : (
-                          <div className="mx-auto" style={{maxWidth: '100%'}}>
-                              <div className="row g-2">
-                                  {activeSlides.map((slide, idx) => {
-                                  return (
-                                      <div key={idx} className="col-12 col-md-6 col-lg-4 col-xl-3">
-                                          <div className="bg-white rounded-3 shadow-sm border overflow-hidden d-flex flex-column position-relative h-100" style={{minHeight: '280px', transition: 'all 0.3s', cursor: 'pointer'}} onMouseEnter={(e) => {e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 10px 25px rgba(0,0,0,0.15)';}} onMouseLeave={(e) => {e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '';}}>
-                                              {/* Slide Content */}
-                                              <div className="flex-fill p-3 d-flex flex-column">
-                                                  <div className="mb-2 rounded-pill" style={{height: '4px', width: '40px', backgroundColor: '#0F172A'}}></div>
-                                                  <h4 className="fs-6 fw-bold mb-3" style={{color: '#0F172A', lineHeight: 1.3, fontSize: '0.95rem'}}>{slide.title}</h4>
+                          <>
+                            {/* Slide Counter */}
+                            <div className="d-flex justify-content-center align-items-center py-3 border-bottom" style={{backgroundColor: '#ffffff'}}>
+                              <span className="fw-bold text-dark" style={{fontSize: '1rem', letterSpacing: '0.05em'}}>
+                                {activeSlides.length} Slides
+                              </span>
+                            </div>
 
-                                                  <ul className="list-unstyled mb-0 flex-fill" style={{fontSize: '0.85rem'}}>
-                                                      {slide.bullets.slice(0, 5).map((b:string, i:number) => (
-                                                          <li key={i} className="text-muted ps-2 border-start border-2 mb-2" style={{lineHeight: 1.4, borderColor: '#cbd5e1'}}>{b}</li>
-                                                      ))}
-                                                  </ul>
+                            {/* Horizontal Scrollable Gallery */}
+                            <div className="position-relative flex-fill">
+                              {/* Left Scroll Button */}
+                              <button
+                                onClick={handleScrollLeft}
+                                className="position-absolute start-0 top-50 translate-middle-y btn bg-white shadow-lg border-0 d-flex align-items-center justify-content-center"
+                                style={{
+                                  width: '48px',
+                                  height: '48px',
+                                  borderRadius: '50%',
+                                  zIndex: 10,
+                                  marginLeft: '1rem'
+                                }}
+                                aria-label="Scroll left"
+                              >
+                                <svg style={{width: '24px', height: '24px'}} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                              </button>
+
+                              {/* Scrollable Container */}
+                              <div
+                                ref={scrollContainerRef}
+                                className="d-flex gap-4 overflow-auto h-100 px-5 py-4"
+                                style={{
+                                  scrollBehavior: 'smooth',
+                                  scrollbarWidth: 'none',
+                                  msOverflowStyle: 'none'
+                                }}
+                              >
+                                {activeSlides.map((slide, index) => (
+                                  <div key={index} className="flex-shrink-0" style={{width: '600px'}}>
+                                    <div className="bg-white shadow-lg d-flex flex-column position-relative overflow-hidden h-100" style={{aspectRatio: '16/9', border: '1px solid #e5e7eb'}}>
+                                        {/* Top Accent Bar */}
+                                        <div style={{height: '6px', background: 'linear-gradient(90deg, #0F172A 0%, #4F46E5 100%)'}}></div>
+
+                                        {/* Slide Content */}
+                                        <div className="flex-fill p-4 d-flex flex-column">
+                                            {/* Category Tag */}
+                                            {slide.category && (
+                                              <div className="mb-2">
+                                                <span className="d-inline-block px-2 py-1 text-uppercase fw-bold"
+                                                      style={{
+                                                        fontSize: '0.6rem',
+                                                        letterSpacing: '0.15em',
+                                                        color: '#4F46E5',
+                                                        backgroundColor: '#EEF2FF',
+                                                        borderLeft: '3px solid #4F46E5'
+                                                      }}>
+                                                  {slide.category}
+                                                </span>
                                               </div>
-                                              {/* Slide Number */}
-                                              <div className="position-absolute bottom-0 end-0 px-2 py-1 bg-dark text-white fw-bold rounded-top-2" style={{fontSize: '0.7rem'}}>
-                                                  {idx + 1}
+                                            )}
+
+                                            {/* Title */}
+                                            <h3 className="fw-bold mb-3"
+                                                style={{
+                                                  color: '#0F172A',
+                                                  fontSize: '1.5rem',
+                                                  lineHeight: 1.2,
+                                                  letterSpacing: '-0.02em',
+                                                  fontWeight: 800
+                                                }}>
+                                              {slide.title}
+                                            </h3>
+
+                                            {/* Bullet Points */}
+                                            <ul className="list-unstyled mb-0 flex-fill" style={{fontSize: '0.9rem'}}>
+                                                {slide.bullets.map((b:string, i:number) => (
+                                                    <li key={i}
+                                                        className="d-flex align-items-start mb-2 position-relative"
+                                                        style={{lineHeight: 1.6, paddingLeft: '1.5rem'}}>
+                                                      {/* Bullet Marker */}
+                                                      <div className="position-absolute d-flex align-items-center justify-content-center"
+                                                           style={{
+                                                             left: 0,
+                                                             top: '0.4rem',
+                                                             width: '16px',
+                                                             height: '16px',
+                                                             backgroundColor: '#EEF2FF',
+                                                             border: '2px solid #4F46E5',
+                                                             borderRadius: '50%',
+                                                             flexShrink: 0
+                                                           }}>
+                                                        <div style={{
+                                                          width: '5px',
+                                                          height: '5px',
+                                                          backgroundColor: '#4F46E5',
+                                                          borderRadius: '50%'
+                                                        }}></div>
+                                                      </div>
+                                                      <span className="text-dark" style={{fontSize: '0.85rem', fontWeight: 400}}>{b}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+
+                                        {/* Footer with Slide Number */}
+                                        <div className="d-flex justify-content-between align-items-center px-3 py-2 border-top" style={{borderColor: '#e5e7eb', backgroundColor: '#F9FAFB'}}>
+                                            <div className="d-flex align-items-center gap-2">
+                                              <div className="bg-dark d-flex align-items-center justify-content-center" style={{width: '20px', height: '20px'}}>
+                                                <span className="fw-black text-white" style={{fontSize: '10px'}}>P</span>
                                               </div>
-                                          </div>
-                                      </div>
-                                  );
-                              })}
+                                              <span className="fw-bold text-dark" style={{fontSize: '0.65rem', letterSpacing: '0.1em'}}>PDFSLIDER</span>
+                                            </div>
+                                            <div className="fw-bold text-dark" style={{fontSize: '0.75rem', letterSpacing: '0.05em'}}>
+                                              {index + 1} / {activeSlides.length}
+                                            </div>
+                                        </div>
+                                    </div>
+                                  </div>
+                                ))}
                               </div>
-                          </div>
+
+                              {/* Right Scroll Button */}
+                              <button
+                                onClick={handleScrollRight}
+                                className="position-absolute end-0 top-50 translate-middle-y btn bg-white shadow-lg border-0 d-flex align-items-center justify-content-center"
+                                style={{
+                                  width: '48px',
+                                  height: '48px',
+                                  borderRadius: '50%',
+                                  zIndex: 10,
+                                  marginRight: '1rem'
+                                }}
+                                aria-label="Scroll right"
+                              >
+                                <svg style={{width: '24px', height: '24px'}} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                              </button>
+                            </div>
+                          </>
                       )}
                   </div>
               </div>

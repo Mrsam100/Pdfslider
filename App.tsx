@@ -335,8 +335,8 @@ const App: React.FC = () => {
 
       {/* Progress Overlay */}
       {isConverting && (
-        <div className="position-fixed top-0 start-0 end-0 bottom-0 d-flex align-items-center justify-content-center" style={{zIndex: 300, backgroundColor: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(16px)', animation: 'fadeIn 0.6s ease-out'}}>
-           <div className="mx-auto p-4 text-center" style={{maxWidth: '28rem'}}>
+        <div className="position-fixed top-0 start-0 end-0 bottom-0 d-flex align-items-center justify-content-center" style={{zIndex: 300, backgroundColor: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(16px)', animation: 'fadeIn 0.6s ease-out', pointerEvents: 'auto', cursor: 'wait'}}>
+           <div className="mx-auto p-4 text-center" style={{maxWidth: '28rem', userSelect: 'none'}}>
               <div className="position-relative mx-auto mb-4" style={{width: '6rem', height: '6rem'}}>
                   <svg className="w-100 h-100" style={{transform: 'rotate(-90deg)'}}>
                     <circle cx="48" cy="48" r="40" fill="none" stroke="#e0e0e0" strokeWidth="8" />
@@ -368,8 +368,8 @@ const App: React.FC = () => {
 
         {view === 'workbench' && (
             <div className="view-enter-active">
-              {/* Back Button */}
-              <div className="px-3 px-md-4 pb-3">
+              {/* Back Button - Sticky (positioned below navbar) */}
+              <div className="px-3 px-md-4 pb-3 position-sticky" style={{top: '5.5rem', backgroundColor: '#ffffff', zIndex: 100, paddingTop: '1rem', borderBottom: '1px solid #e5e7eb'}}>
                 <button
                   onClick={() => handleNav('landing')}
                   className="btn border border-dark text-dark d-flex align-items-center gap-2 fw-bold text-uppercase"
