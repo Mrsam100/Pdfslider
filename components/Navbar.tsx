@@ -32,21 +32,24 @@ const Navbar: React.FC<NavbarProps> = ({ onNavClick, activeView, shopName, isLog
 
   return (
     <>
-      <div className="position-fixed top-0 start-0 w-100" style={{ zIndex: 150, padding: '1rem' }}>
+      <div className="position-fixed top-0 start-0 w-100" style={{ zIndex: 150, padding: '0.5rem 1rem' }}>
         <nav className="navbar navbar-expand-lg navbar-light border-bottom mx-auto"
-             style={{ maxWidth: '1400px', zIndex: 160, borderColor: '#e0e0e0 !important', backgroundColor: 'transparent' }}>
-          <div className="container-fluid px-3 px-md-4">
+             style={{ maxWidth: '1400px', zIndex: 160, borderColor: '#e0e0e0 !important', backgroundColor: '#ffffff' }}>
+          <div className="container-fluid px-2 px-md-4">
 
             {/* Logo Section */}
             <div className="navbar-brand d-flex align-items-center gap-2 cursor-pointer"
                  onClick={() => handleMobileNav('landing')}
-                 style={{ cursor: 'pointer' }}>
+                 style={{ cursor: 'pointer', marginBottom: 0 }}>
               <div className="d-flex align-items-center justify-content-center bg-dark text-white fw-black"
-                   style={{ width: '40px', height: '40px', fontSize: '1.125rem' }}>
+                   style={{ width: '32px', height: '32px', fontSize: '0.875rem' }}>
                 P
               </div>
-              <span className="fw-bold fs-5 text-dark" style={{ letterSpacing: '0.1em' }}>
+              <span className="fw-bold text-dark d-none d-sm-inline" style={{ fontSize: '1rem', letterSpacing: '0.1em' }}>
                 PDFSLIDER
+              </span>
+              <span className="fw-bold text-dark d-inline d-sm-none" style={{ fontSize: '0.875rem', letterSpacing: '0.1em' }}>
+                PDF
               </span>
             </div>
 
